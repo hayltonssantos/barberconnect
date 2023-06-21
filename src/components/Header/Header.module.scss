@@ -1,0 +1,44 @@
+@import '../../components/styles/abstract/variables.scss';
+@import '../../components/styles/abstract/mixins.scss';
+
+.header{
+    display: flex;
+    flex-wrap: wrap;
+    
+    background-color: $background-color-primary;
+
+    font-family: $primary-font;
+    color: $secondary-color;
+
+    box-sizing: content-box;
+    justify-content: space-between;
+
+    margin-bottom: 2px;
+
+    height: 80px;
+    @include prefix((box-shadow: 10px 10px 10px -4px rgba(0,0,0,0.31)), webkit ms moz);
+            
+    .divTitle{
+        border-right: 1px solid $secondary-color ;
+        margin-left: 10px;
+        text-align: center;
+        .title{
+            font-size: 1.5rem;
+            margin-right: 10px;
+        }
+    }
+    .user{
+        display: flex;
+        .dropdown{
+            @include prefix((box-shadow: 10px 10px 10px -4px rgba(0,0,0,0.31)), webkit ms moz);
+            margin: 10px;
+            width: 100px;
+            letter-spacing: 1px;
+        }
+        .dropdown, .dropdownItens{
+            @include prefix((box-shadow: 10px 10px 10px -4px rgba(0,0,0,0.31)), webkit ms moz);
+            background-color: $extra-color;
+            border-color: $extra-color;
+        }
+    }
+}

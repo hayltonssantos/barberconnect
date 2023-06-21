@@ -1,0 +1,34 @@
+@import '../../components/styles/abstract/variables.scss';
+@import '../../components/styles/abstract/mixins.scss';
+
+.menuAside{
+    background-color: $background-color-primary;
+    color: $secondary-color;
+
+    display: flex;
+    flex-basis: 15%;
+
+    height: 100vh;
+    .divIcon{
+        display: flex;
+        flex-wrap: wrap;
+        margin: 20px 10px;
+        height: 200px;
+        border-bottom: 1px solid $secondary-color;
+        
+        justify-content: center;
+        .icon{
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            @include prefix((box-shadow: 10px 10px 10px -4px rgba(0,0,0,0.31)), webkit ms moz);
+        }
+        .storeName{
+            display: inline;
+            width: 100%;
+            font-size: 1rem;
+            text-align: center;
+        }
+    }
+
+}

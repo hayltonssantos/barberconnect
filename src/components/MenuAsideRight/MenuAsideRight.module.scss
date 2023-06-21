@@ -1,0 +1,20 @@
+@import '../../components/styles/abstract/variables.scss';
+@import '../../components/styles/abstract/mixins.scss';
+
+.menuAside{
+    background-color: $background-color-primary;
+    color: $secondary-color;
+
+    display: flex;
+    flex-basis: 15%;
+
+    height: 100vh;
+    .divIcon{
+        display: flex;
+        flex-wrap: wrap;
+        margin: 20px 10px;
+        height: 200px;      
+        justify-content: center;
+    }
+
+}
