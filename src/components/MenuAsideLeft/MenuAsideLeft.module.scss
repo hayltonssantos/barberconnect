@@ -6,14 +6,15 @@
     color: $secondary-color;
 
     display: flex;
+    flex-wrap: wrap;
+    flex-direction: column;
     flex-basis: 15%;
 
     height: 100vh;
     .divIcon{
         display: flex;
         flex-wrap: wrap;
-        margin: 20px 10px;
-        height: 200px;
+        margin: 10px;
         border-bottom: 1px solid $secondary-color;
         
         justify-content: center;
@@ -29,6 +30,31 @@
             font-size: 1rem;
             text-align: center;
         }
+    }
+    .divButtons{
+        display: flex;
+        flex-wrap: wrap;
+        flex-direction: column;
+        width: 100%;
+        align-items: center;
+        justify-content: space-evenly;
+        margin-top: 1rem;
+        .buttons{
+            display: flex;
+
+            justify-content: space-between;
+            align-items: center;
+            text-align: center;
+            
+            margin: 0.6rem;
+            
+            width: 50%;
+            
+            color: black;
+            font-weight: 400;
+            @include prefix((box-shadow: 10px 10px 10px -4px rgba(122, 122, 122, 0.31)), webkit ms moz);
+        }
+        
     }
 
 }
