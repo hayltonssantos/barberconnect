@@ -199,7 +199,7 @@ export default function Calendar({onOffSchedule = false, onOffCalendar = true}) 
 
         <div className={styles.boxDate}>
           
-          {generateDate(today.month(),today.year()).map(({date, currentMonth, today},index)=>{
+          {generateDate(today.month(),today.year()).map(({date, currentMonth, today})=>{
             
             return( 
               <div className={styles.date}>
