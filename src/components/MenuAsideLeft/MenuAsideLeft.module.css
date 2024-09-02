@@ -1,0 +1,56 @@
+@font-face {
+  font-family: "Amnestia";
+  src: url(../../assets/fonts/Amnestia.ttf);
+}
+/* Fonts */
+/* Colors */
+.menuAside {
+  background-color: #001D22;
+  color: #f9f9f9;
+  display: flex;
+  flex-wrap: wrap;
+  flex-direction: column;
+  flex-basis: 15%;
+  height: 100vh;
+}
+.menuAside .divIcon {
+  display: flex;
+  flex-wrap: wrap;
+  margin: 10px;
+  border-bottom: 1px solid #f9f9f9;
+  justify-content: center;
+}
+.menuAside .divIcon .icon {
+  width: 150px;
+  height: 150px;
+  border-radius: 50%;
+  -ms-box-shadow: 10px 10px 10px -4px rgba(0, 0, 0, 0.31);
+  box-shadow: 10px 10px 10px -4px rgba(0, 0, 0, 0.31);
+}
+.menuAside .divIcon .storeName {
+  display: inline;
+  width: 100%;
+  font-size: 1rem;
+  text-align: center;
+}
+.menuAside .divButtons {
+  display: flex;
+  flex-wrap: wrap;
+  flex-direction: column;
+  width: 100%;
+  align-items: center;
+  justify-content: space-evenly;
+  margin-top: 1rem;
+}
+.menuAside .divButtons .buttons {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  text-align: center;
+  margin: 0.6rem;
+  width: 50%;
+  color: black;
+  font-weight: 400;
+  -ms-box-shadow: 10px 10px 10px -4px rgba(122, 122, 122, 0.31);
+  box-shadow: 10px 10px 10px -4px rgba(122, 122, 122, 0.31);
+}/*# sourceMappingURL=MenuAsideLeft.module.css.map */

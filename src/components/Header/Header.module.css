@@ -1,0 +1,44 @@
+@font-face {
+  font-family: "Amnestia";
+  src: url(../../assets/fonts/Amnestia.ttf);
+}
+/* Fonts */
+/* Colors */
+.header {
+  display: flex;
+  flex-wrap: wrap;
+  background-color: #001D22;
+  font-family: "Amnestia";
+  color: #f9f9f9;
+  box-sizing: content-box;
+  justify-content: space-between;
+  margin-bottom: 2px;
+  height: 80px;
+  -ms-box-shadow: 10px 10px 10px -4px rgba(0, 0, 0, 0.31);
+  box-shadow: 10px 10px 10px -4px rgba(0, 0, 0, 0.31);
+}
+.header .divTitle {
+  border-right: 1px solid #f9f9f9;
+  margin-left: 10px;
+  text-align: center;
+}
+.header .divTitle .title {
+  font-size: 1.5rem;
+  margin-right: 10px;
+}
+.header .user {
+  display: flex;
+}
+.header .user .dropdown {
+  -ms-box-shadow: 10px 10px 10px -4px rgba(0, 0, 0, 0.31);
+  box-shadow: 10px 10px 10px -4px rgba(0, 0, 0, 0.31);
+  margin: 10px;
+  width: 100px;
+  letter-spacing: 1px;
+}
+.header .user .dropdown, .header .user .dropdownItens {
+  -ms-box-shadow: 10px 10px 10px -4px rgba(0, 0, 0, 0.31);
+  box-shadow: 10px 10px 10px -4px rgba(0, 0, 0, 0.31);
+  background-color: #b9954a;
+  border-color: #b9954a;
+}/*# sourceMappingURL=Header.module.css.map */

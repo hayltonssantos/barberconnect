@@ -1,0 +1,26 @@
+@font-face {
+  font-family: "Amnestia";
+  src: url(../../assets/fonts/Amnestia.ttf);
+}
+/* Fonts */
+/* Colors */
+.menuAside {
+  background-color: #001D22;
+  display: flex;
+  flex-basis: 75%;
+  margin: 0 1px;
+  padding: 10px 10px 0 10px;
+  height: 100vh;
+}
+.menuAside .backScheduling {
+  display: flex;
+  flex-basis: 100%;
+  margin: 0 auto;
+}
+.menuAside .backScheduling .scheduling {
+  display: flex;
+  width: 100%;
+  height: 100%;
+  border-color: none;
+  background-color: #f9f9f9;
+}/*# sourceMappingURL=Scheduling.module.css.map */
