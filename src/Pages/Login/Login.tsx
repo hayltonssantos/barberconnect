@@ -25,7 +25,7 @@ export default function Login() {
 
     useEffect(() => {
         if (user) {
-            /* navigate("/schedule")  */
+            navigate("/schedule")
             setErr(!err)
         }
     }, [user])
