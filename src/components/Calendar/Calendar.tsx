@@ -1,248 +1,309 @@
-import React, {useState, useContext } from 'react'
-import { generateDate, months } from '../../util/calendar.tsx'
-import cn from '../../util/cn.tsx';
-import {GrFormNext, GrFormPrevious} from 'react-icons/gr'
-import styles from './Calendar.module.scss'
-import { DateContext } from '../../context/date.tsx';
+import React, { useState, useMemo } from 'react';
+import { generateDate, months } from '../../util/calendar';
+import cn from '../../util/cn';
+import { GrFormNext, GrFormPrevious } from 'react-icons/gr';
 import { Table } from 'react-bootstrap';
-import { StoreContext } from '../../context/store.tsx';
+import { useDate } from '../../contexts/DateContext';
+import { useStore } from '../../contexts/StoreContext';
+import { useConfig } from '../../contexts/ConfigContext';
+import styles from './Calendar.module.scss';
+import dayjs from 'dayjs';
 
-export default function Calendar({onOffSchedule = false, onOffCalendar = true}) {
+interface CalendarProps {
+  showSchedule?: boolean;
+  showCalendar?: boolean;
+  onDateSelect?: (date: any) => void;
+  onAppointmentClick?: (appointment: any) => void;
+}
 
-  const days = ['S', 'M', 'T', 'W', 'T', 'F', 'S']
+interface Appointment {
+  id: number;
+  clientId: number;
+  employeeId: number;
+  serviceIds: number[];
+  date: Date;
+  startTime: string;
+  endTime: string;
+  status: 'agendado' | 'confirmado' | 'em_andamento' | 'concluido' | 'cancelado';
+  notes?: string;
+  totalPrice: number;
+}
 
-  const {today, setToday, selectDate, setSelectDate, currentDate} : any = useContext(DateContext)
-  const {activeEmployee} : any = useContext(StoreContext) 
+export default function Calendar({ 
+  showSchedule = false, 
+  showCalendar = true,
+  onDateSelect,
+  onAppointmentClick
+}: CalendarProps) {
+  
+  const days = ['D', 'S', 'T', 'Q', 'Q', 'S', 'S'];
+  const daysFull = ['Domingo', 'Segunda', 'Terça', 'Quarta', 'Quinta', 'Sexta', 'Sábado'];
 
-  const marcacoes = [
-    { 'func': 'User 1',
-      'name': 'Matheus',
-      'tel': '987657848',
-      'time': '09:30 - 10:00',
-      'date' : '2025/05/15'    
-    },
-    { 'func': 'User 1',
-      'name': 'Pedro',
-      'tel': '987657848',
-      'time': '09:30 - 10:00',
-      'date' : '2025/05/16'   
-    },
-    { 'func': 'User 2',
-      'name': 'Paulo',
-      'tel': '987657848',
-      'time': '09:30 - 10:00',
-      'date' : '2025/05/17'    
-    },
-    { 'func': 'User 2',
-      'name': 'Carlos',
-      'tel': '987657848',
-      'time': '09:30 - 10:00',
-      'date' : '2025/05/17'   
-    },
-    { 'func': 'User 1',
-    'name': 'Matheus',
-    'tel': '987657848',
-    'time': '09:30 - 10:00',
-    'date' : '2025/05/18'    
-    },
-    { 'func': 'User 1',
-      'name': 'Pedro',
-      'tel': '987657848',
-      'time': '09:30 - 10:00',
-      'date' : '2025/05/19'   
-    },
-    { 'func': 'User 2',
-      'name': 'Paulo',
-      'tel': '987657848',
-      'time': '09:30 - 10:00',
-      'date' : '2025/05/20'    
-    },
-    { 'func': 'User 2',
-      'name': 'Carlos',
-      'tel': '987657848',
-      'time': '09:30 - 10:00',
-      'date' : '2025/05/22'   
-    },
-    { 'func': 'User 1',
-    'name': 'Matheus',
-    'tel': '987657848',
-    'time': '09:30 - 10:00',
-    'date' : '2025/05/21'    
-    },
-    { 'func': 'User 1',
-      'name': 'Pedro',
-      'tel': '987657848',
-      'time': '09:30 - 10:00',
-      'date' : '2025/05/21'   
-    },
-    { 'func': 'User 2',
-      'name': 'Paulo',
-      'tel': '987657848',
-      'time': '09:30 - 10:00',
-      'date' : '2025/05/19'    
-    },
-    { 'func': 'User 2',
-      'name': 'Carlos',
-      'tel': '987657848',
-      'time': '09:30 - 10:00',
-      'date' : '2025/05/23'   
-    },
-  ]
+  const { 
+    today, 
+    selectedDate, 
+    setSelectedDate, 
+    setToday, 
+    currentDate,
+    formatDate,
+    formatTime,
+    isToday,
+    isSameDay
+  } = useDate();
 
-  const noMeeting = () => { 
-    const element = document.getElementById('marcacao')
-    const exist = document.body.contains(element)
-    if (exist === true) {
-      return ('')
-     }else{
-      return (        
-        <tr id='marcacao' className={styles.marcacaodiv}>
-          <td colSpan={12}>
-            No more meetings for today
-          </td>
-        </tr>
-      )
+  const { 
+    selectedEmployee, 
+    appointments, 
+    clients, 
+    employees, 
+    services,
+    getAppointmentsByDate,
+    getAppointmentsByEmployee
+  } = useStore();
+
+  const { barberShopConfig } = useConfig();
+
+  const [viewMode, setViewMode] = useState<'month' | 'week' | 'day'>('month');
+
+  // Filtra agendamentos baseado no funcionário selecionado e data
+  const filteredAppointments = useMemo(() => {
+    let filtered = getAppointmentsByDate(selectedDate.toDate());
+    
+    if (selectedEmployee && selectedEmployee.id !== 0) {
+      filtered = filtered.filter(apt => apt.employeeId === selectedEmployee.id);
     }
-  }
+    
+    return filtered.sort((a, b) => a.startTime.localeCompare(b.startTime));
+  }, [selectedDate, selectedEmployee, appointments, getAppointmentsByDate]);
 
-  const schedule = (onOffSchedule : any) => {
-    if (onOffSchedule === true){
+  // Conta agendamentos por data para mostrar indicadores no calendário
+  const appointmentsByDate = useMemo(() => {
+    const dateMap = new Map();
+    
+
+
+    appointments.forEach(appointment => {
+      const dateKey = formatDate(dayjs(appointment.date), 'YYYY-MM-DD');
+      const current = dateMap.get(dateKey) || 0;
+      
+      // Filtra por funcionário se selecionado
+      if (!selectedEmployee || selectedEmployee.id === 0 || appointment.employeeId === selectedEmployee.id) {
+        dateMap.set(dateKey, current + 1);
+      }
+    });
+    
+    return dateMap;
+  }, [appointments, selectedEmployee, formatDate]);
+
+  const handleDateClick = (date: any) => {
+    setSelectedDate(date);
+    onDateSelect?.(date);
+  };
+
+  const handleAppointmentClick = (appointment: Appointment) => {
+    onAppointmentClick?.(appointment);
+  };
+
+  const getAppointmentStatusColor = (status: string) => {
+    const colors = {
+      agendado: '#ed8936',
+      confirmado: '#48bb78',
+      em_andamento: '#00bcd4',
+      concluido: '#38a169',
+      cancelado: '#e53e3e'
+    };
+    return colors[status as keyof typeof colors] || '#gray';
+  };
+
+  const renderSchedule = () => {
+    if (!showSchedule) return null;
+
     return (
-      <>
       <div className={styles.schedule}>
-        <div className={styles.titleSchedule}>
-          <h1
-            > 
-            Schedule for {selectDate.toDate().toDateString()}
-          </h1>
+        <div className={styles.scheduleHeader}>
+          <h2 className={styles.scheduleTitle}>
+            Agendamentos para {formatDate(selectedDate, 'DD [de] MMMM [de] YYYY')}
+          </h2>
+          <div className={styles.scheduleInfo}>
+            <span className={styles.dayOfWeek}>
+              {daysFull[selectedDate.day()]}
+            </span>
+            {selectedEmployee && selectedEmployee.id !== 0 && (
+              <span className={styles.employeeFilter}>
+                Funcionário: {selectedEmployee.name}
+              </span>
+            )}
+          </div>
         </div>
-          <Table striped hover>
-            <thead>
+
+        <div className={styles.appointmentsList}>
+          {filteredAppointments.length === 0 ? (
+            <div className={styles.noAppointments}>
+              <div className={styles.emptyIcon}>📅</div>
+              <h3>Nenhum agendamento</h3>
+              <p>Não há agendamentos para esta data</p>
+            </div>
+          ) : (
+            <Table striped hover className={styles.appointmentsTable}>
+              <thead>
                 <tr>
-                  <th>Funcionário</th>
+                  <th>Horário</th>
                   <th>Cliente</th>
-                  <th>Telefone</th>
-                  <th>Horario</th>
+                  <th>Funcionário</th>
+                  <th>Serviços</th>
+                  <th>Status</th>
+                  <th>Valor</th>
                 </tr>
               </thead>
               <tbody>
-                {marcacoes.map((marcado)=>{
-                  const dateMarcado = new Date(marcado.date)
-                  const aux = []
-                  if (activeEmployee === 'All'){
-                    if(dateMarcado.toDateString() === selectDate.toDate().toDateString()){
-                      aux.push(
-                        <tr id='marcacao' className={styles.marcacaodiv}>
-                          <td>{marcado.func}</td>
-                          <td>{marcado.name}</td>
-                          <td>{marcado.tel}</td>
-                          <td>{marcado.time}</td>
-                        </tr>
-                      )
-                    }
-                  }else{
-                    if(dateMarcado.toDateString() === selectDate.toDate().toDateString() && (marcado.func === activeEmployee )){
-                      aux.push(
-                        <tr id='marcacao' className={styles.marcacaodiv}>
-                          <td>{marcado.func}</td>
-                          <td>{marcado.name}</td>
-                          <td>{marcado.tel}</td>
-                          <td>{marcado.time}</td>
-                        </tr>
-                      )
-                    }
-                  }  
-                  return aux
+                {filteredAppointments.map((appointment) => {
+                  const client = clients.find(c => c.id === appointment.clientId);
+                  const employee = employees.find(e => e.id === appointment.employeeId);
+                  const appointmentServices = services.filter(s => 
+                    appointment.serviceIds.includes(s.id)
+                  );
+
+                  return (
+                    <tr 
+                      key={appointment.id} 
+                      className={styles.appointmentRow}
+                      onClick={() => handleAppointmentClick(appointment)}
+                    >
+                      <td className={styles.timeCell}>
+                        <div className={styles.timeRange}>
+                          <span className={styles.startTime}>{appointment.startTime}</span>
+                          <span className={styles.endTime}>{appointment.endTime}</span>
+                        </div>
+                      </td>
+                      <td className={styles.clientCell}>
+                        <div className={styles.clientInfo}>
+                          <span className={styles.clientName}>{client?.name || 'Cliente não encontrado'}</span>
+                          <span className={styles.clientPhone}>{client?.phone}</span>
+                        </div>
+                      </td>
+                      <td className={styles.employeeCell}>
+                        {employee?.name || 'Funcionário não encontrado'}
+                      </td>
+                      <td className={styles.servicesCell}>
+                        <div className={styles.servicesList}>
+                          {appointmentServices.map(service => (
+                            <span key={service.id} className={styles.serviceTag}>
+                              {service.name}
+                            </span>
+                          ))}
+                        </div>
+                      </td>
+                      <td className={styles.statusCell}>
+                        <span 
+                          className={styles.statusBadge}
+                          style={{ backgroundColor: getAppointmentStatusColor(appointment.status) }}
+                        >
+                          {appointment.status.replace('_', ' ').toUpperCase()}
+                        </span>
+                      </td>
+                      <td className={styles.priceCell}>
+                        R$ {appointment.totalPrice.toFixed(2)}
+                      </td>
+                    </tr>
+                  );
                 })}
-                {noMeeting()}   
               </tbody>
-          </Table>
+            </Table>
+          )}
         </div>
-      </>
-    )}
-  }
+      </div>
+    );
+  };
 
-  const calendar = (onOffCalendar : any) => {
-    if (onOffCalendar === true){
-      return(
-        <div className={styles.calendar}>
-          <div className={styles.header}>
-            <h1 className={styles.title}>
-              {months[today.month()]}, {today.year()}
-            </h1>
-            <div className={styles.nextPrevious}>
-              <GrFormPrevious
-                className={styles.next}
-                onClick={() =>{
-                  setToday(today.month(today.month() - 1))
-                }}
-              />
-              <h1 className={styles.todayHeader} onClick={() =>{
-                  setSelectDate(currentDate)
-                  setToday(currentDate)
-                }}
-              >Today</h1>
-              <GrFormNext className={styles.previous}
-              onClick={() =>{
-                setToday(today.month(today.month() + 1))
-              }}/>
-            </div>
-          </div>
-          <div className={styles.days}>
-            {days.map((day, index)=>{
-              return <h1 key={index} 
-              className={styles.day}>
-                {day}
-                </h1>
-            })}
-          </div>
+  const renderCalendar = () => {
+    if (!showCalendar) return null;
 
-        <div className={styles.boxDate}>
+    return (
+      <div className={styles.calendar}>
+        <div className={styles.calendarHeader}>
+          <h1 className={styles.monthYear}>
+            {months[today.month()]}, {today.year()}
+          </h1>
           
-          {generateDate(today.month(),today.year()).map(({date, currentMonth, today})=>{
+          <div className={styles.calendarControls}>
+            <button
+              className={styles.navButton}
+              onClick={() => setToday(today.month(today.month() - 1))}
+              aria-label="Mês anterior"
+            >
+              <GrFormPrevious />
+            </button>
             
-            return( 
-              <div className={styles.date}>
-                <h1 className={cn(
-                  currentMonth ? "" : `${styles.current}`,
-                  
-                  today?`${styles.today}`:"",
+            <button
+              className={styles.todayButton}
+              onClick={() => {
+                setSelectedDate(currentDate);
+                setToday(currentDate);
+              }}
+            >
+              Hoje
+            </button>
+            
+            <button
+              className={styles.navButton}
+              onClick={() => setToday(today.month(today.month() + 1))}
+              aria-label="Próximo mês"
+            >
+              <GrFormNext />
+            </button>
+          </div>
+        </div>
 
-                  String(selectDate
-                    .toDate()
-                    .toDateString) === 
-                    
-                    String(date.toDate()
-                      .toDateString()) 
-                      ? `${styles.selectDate}`
-                      : "",
+        <div className={styles.weekDays}>
+          {days.map((day, index) => (
+            <div key={index} className={styles.weekDay}>
+              {day}
+            </div>
+          ))}
+        </div>
 
-                  `${styles.tableDate}`
-                  )}
-                  onClick={() => {
-                    setSelectDate(date)
-                  }}
-                  >
-                    {date.date()}
-                </h1>
+        <div className={styles.datesGrid}>
+          {generateDate(today.month(), today.year()).map(({ date, currentMonth, today: isCurrentDay }, index) => {
+            const dateKey = formatDate(date, 'YYYY-MM-DD');
+            const appointmentCount = appointmentsByDate.get(dateKey) || 0;
+            const isSelected = isSameDay(selectedDate, date);
+            const isTodayDate = isToday(date);
+
+            return (
+              <div
+                key={index}
+                className={cn(
+                  styles.dateCell,
+                  !currentMonth && styles.otherMonth,
+                  isTodayDate && styles.today,
+                  isSelected && styles.selected,
+                  appointmentCount > 0 && styles.hasAppointments
+                )}
+                onClick={() => handleDateClick(date)}
+              >
+                <span className={styles.dateNumber}>
+                  {date.date()}
+                </span>
+                
+                {appointmentCount > 0 && (
+                  <div className={styles.appointmentIndicator}>
+                    <span className={styles.appointmentCount}>
+                      {appointmentCount}
+                    </span>
+                  </div>
+                )}
               </div>
-              )
-              
+            );
           })}
         </div>
       </div>
-      )
-    }
-  }
-  
-  return (
-    <div className={styles.background}>
-        {calendar(onOffCalendar)}
+    );
+  };
 
-      <div className={styles.backSchedule}>
-        {schedule(onOffSchedule)}
-      </div>
-      
+  return (
+    <div className={styles.calendarContainer}>
+      {renderCalendar()}
+      {renderSchedule()}
     </div>
-  )
+  );
 }

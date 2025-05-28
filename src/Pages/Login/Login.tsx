@@ -2,7 +2,7 @@ import { Form, Row } from 'react-bootstrap';
 import { useContext, useEffect, useState } from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './Login.scss'
-import { UserContext } from '../../context/user';
+import { UserContext } from '../../contexts/user';
 import { useNavigate } from 'react-router-dom';
 
 export default function Login() {

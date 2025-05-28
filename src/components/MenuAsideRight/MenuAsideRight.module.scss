@@ -1,20 +1,388 @@
-@import '../../components/styles/abstract/variables.scss';
-@import '../../components/styles/abstract/mixins.scss';
+// MenuAsideRight.module.scss
+@import '../../util/styles/variables.scss';
+@import '../../util/styles/mixins.scss';
 
-.menuAside{
-    background-color: $background-color-primary;
-    color: $secondary-color;
+.menuAside {
+  width: 320px;
+  min-height: 100vh;
+  background: linear-gradient(180deg, $primary-color 0%, darken($primary-color, 15%) 100%);
+  color: $secondary-color;
+  display: flex;
+  flex-direction: column;
+  box-shadow: -4px 0 12px rgba(0,0,0,0.3);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  overflow-y: auto;
 
-    display: flex;
-    flex-basis: 15%;
+  .header {
+    padding: 2rem 1.5rem;
+    border-bottom: 2px solid rgba(185, 149, 74, 0.3);
+    text-align: center;
 
-    height: 100vh;
-    .divIcon{
-        display: flex;
-        flex-wrap: wrap;
-        margin: 20px 10px;
-        height: 200px;      
-        justify-content: center;
+    .title {
+      font-family: $primary-font;
+      font-size: 1.6rem;
+      margin: 0 0 1rem 0;
+      color: $extra-color;
+      text-shadow: 1px 1px 2px rgba(0,0,0,0.3);
+      font-weight: normal;
     }
 
+    .shopInfo {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+
+      .shopName {
+        font-size: 1rem;
+        font-weight: 600;
+        color: $secondary-color;
+        opacity: 0.9;
+      }
+
+      .currentDate {
+        font-size: 0.85rem;
+        color: rgba(249, 249, 249, 0.7);
+        text-transform: capitalize;
+      }
+    }
+  }
+
+  .quickStats {
+    padding: 1.5rem;
+    border-bottom: 1px solid rgba(185, 149, 74, 0.2);
+
+    .sectionTitle {
+      font-size: 1rem;
+      font-weight: 700;
+      color: $extra-color;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin: 0 0 1.5rem 0;
+      text-align: center;
+    }
+
+    .statsGrid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+      margin-bottom: 2rem;
+
+      .quickStat {
+        background: rgba(249, 249, 249, 0.05);
+        border-radius: 12px;
+        padding: 1rem;
+        border: 2px solid rgba(249, 249, 249, 0.1);
+        transition: all 0.3s ease;
+
+        &:hover {
+          background: rgba(249, 249, 249, 0.1);
+          transform: translateY(-2px);
+          box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+        }
+
+        .statIcon {
+          font-size: 1.5rem;
+          margin-bottom: 0.5rem;
+          display: block;
+        }
+
+        .statInfo {
+          display: flex;
+          flex-direction: column;
+          gap: 0.25rem;
+
+          .statLabel {
+            font-size: 0.75rem;
+            color: rgba(249, 249, 249, 0.7);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+          }
+
+          .statValue {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: $secondary-color;
+          }
+        }
+      }
+    }
+
+    .nextAppointment {
+      background: rgba(185, 149, 74, 0.1);
+      border-radius: 12px;
+      padding: 1.5rem;
+      border: 2px solid rgba(185, 149, 74, 0.3);
+
+      .nextTitle {
+        font-size: 0.9rem;
+        font-weight: 600;
+        color: $extra-color;
+        margin: 0 0 1rem 0;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        text-align: center;
+      }
+
+      .appointmentCard {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+
+        .appointmentTime {
+          background: $extra-color;
+          color: white;
+          padding: 0.75rem;
+          border-radius: 8px;
+          font-weight: 700;
+          font-size: 1.1rem;
+          text-align: center;
+          min-width: 70px;
+          box-shadow: 0 2px 6px rgba(185, 149, 74, 0.3);
+        }
+
+        .appointmentInfo {
+          display: flex;
+          flex-direction: column;
+          gap: 0.25rem;
+          flex: 1;
+
+          .clientName {
+            font-weight: 600;
+            color: $secondary-color;
+            font-size: 0.95rem;
+          }
+
+          .employeeName {
+            font-size: 0.8rem;
+            color: rgba(249, 249, 249, 0.7);
+          }
+        }
+      }
+    }
+  }
+
+  .content {
+    flex: 1;
+    padding: 1.5rem;
+    
+    // Estilos para o conteúdo filho (como Calendar)
+    > * {
+      width: 100%;
+      height: 100%;
+    }
+  }
+
+  .footer {
+    padding: 1.5rem;
+    border-top: 2px solid rgba(185, 149, 74, 0.3);
+    margin-top: auto;
+
+    .footerTitle {
+      font-size: 0.9rem;
+      font-weight: 600;
+      color: $extra-color;
+      margin: 0 0 0.75rem 0;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    .workingHours {
+      margin-bottom: 1.5rem;
+
+      .hours {
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+
+        span:first-child {
+          font-weight: 600;
+          color: $secondary-color;
+          font-size: 0.95rem;
+        }
+
+        .workingDays {
+          font-size: 0.8rem;
+          color: rgba(249, 249, 249, 0.7);
+          text-transform: capitalize;
+        }
+      }
+
+      .noInfo {
+        font-size: 0.9rem;
+        color: rgba(249, 249, 249, 0.5);
+        font-style: italic;
+      }
+    }
+
+    .contact {
+      .phone {
+        font-weight: 600;
+        color: $secondary-color;
+        font-size: 0.95rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+
+        &::before {
+          content: "📞";
+          font-size: 1rem;
+        }
+      }
+    }
+  }
+}
+
+// Responsividade
+@media (max-width: 1200px) {
+  .menuAside {
+    width: 280px;
+
+    .header {
+      padding: 1.5rem 1rem;
+
+      .title {
+        font-size: 1.4rem;
+      }
+    }
+
+    .quickStats {
+      padding: 1rem;
+
+      .statsGrid {
+        gap: 0.75rem;
+
+        .quickStat {
+          padding: 0.75rem;
+
+          .statIcon {
+            font-size: 1.3rem;
+          }
+
+          .statInfo .statValue {
+            font-size: 1rem;
+          }
+        }
+      }
+
+      .nextAppointment {
+        padding: 1rem;
+
+        .appointmentCard {
+          gap: 0.75rem;
+
+          .appointmentTime {
+            padding: 0.5rem;
+            font-size: 1rem;
+            min-width: 60px;
+          }
+        }
+      }
+    }
+
+    .content {
+      padding: 1rem;
+    }
+
+    .footer {
+      padding: 1rem;
+    }
+  }
+}
+
+@media (max-width: 1024px) {
+  .menuAside {
+    width: 250px;
+
+    .quickStats .statsGrid {
+      grid-template-columns: 1fr;
+      gap: 0.5rem;
+
+      .quickStat {
+        padding: 0.75rem;
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+
+        .statIcon {
+          font-size: 1.2rem;
+          margin-bottom: 0;
+        }
+
+        .statInfo {
+          gap: 0.1rem;
+
+          .statLabel {
+            font-size: 0.7rem;
+          }
+
+          .statValue {
+            font-size: 0.95rem;
+          }
+        }
+      }
+    }
+  }
+}
+
+@media (max-width: 768px) {
+  .menuAside {
+    position: fixed;
+    right: -320px;
+    transition: right 0.3s ease;
+    width: 320px;
+    z-index: 1000;
+
+    &.open {
+      right: 0;
+    }
+
+    &::before {
+      content: '';
+      position: fixed;
+      top: 0;
+      left: -100vw;
+      width: 100vw;
+      height: 100vh;
+      background: rgba(0, 0, 0, 0.5);
+      z-index: -1;
+      opacity: 0;
+      transition: opacity 0.3s ease;
+    }
+
+    &.open::before {
+      opacity: 1;
+    }
+  }
+}
+
+@media (max-width: 480px) {
+  .menuAside {
+    width: 100vw;
+    right: -100vw;
+
+    &.open {
+      right: 0;
+    }
+  }
+}
+
+// Scrollbar customization
+.menuAside::-webkit-scrollbar {
+  width: 6px;
+}
+
+.menuAside::-webkit-scrollbar-track {
+  background: rgba(249, 249, 249, 0.1);
+  border-radius: 3px;
+}
+
+.menuAside::-webkit-scrollbar-thumb {
+  background: rgba(185, 149, 74, 0.5);
+  border-radius: 3px;
+
+  &:hover {
+    background: rgba(185, 149, 74, 0.7);
+  }
 }

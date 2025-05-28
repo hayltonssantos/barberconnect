@@ -7,18 +7,16 @@ import Calendar from '../../components/Calendar/Calendar'
 export default function Schedule(){
     return (
         <div>
-        <Header/>
-            <section style={
-                {
-                    display: 'flex'
-                }
-            }>
+            <Header/>
+            <section style={{
+                display: 'flex'
+            }}>
                 <MenuAsideLeft/>
                 <Scheduling>
-                    <Calendar onOffSchedule={true} onOffCalendar={false}/>
+                    <Calendar showSchedule={true} showCalendar={false}/>
                 </Scheduling>
                 <MenuAsideRight>
-                    <Calendar/>
+                    <Calendar showSchedule={false} showCalendar={true}/>
                 </MenuAsideRight>
             </section>
         </div>

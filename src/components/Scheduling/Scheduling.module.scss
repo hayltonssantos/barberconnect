@@ -1,4 +1,5 @@
-@import '../../components/styles/abstract/variables.scss';
+@import '../../util/styles/variables.scss';
+@import '../../util/styles/mixins.scss';
 
 .menuAside{
     background-color: $background-color-primary;

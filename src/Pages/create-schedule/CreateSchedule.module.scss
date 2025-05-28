@@ -1,0 +1,719 @@
+@import '../../util/styles/variables.scss';
+
+@font-face {
+  font-family: 'Amnestia';
+  src: url(../../assets/fonts/Amnestia.ttf);
+}
+
+$primary-font: 'Amnestia';
+$primary-color: #004a56;
+$secondary-color: #f9f9f9;
+$accent-color: #00bcd4;
+$success-color: #48bb78;
+$warning-color: #ed8936;
+$error-color: #e53e3e;
+
+.createSchedulePage {
+  min-height: 100vh;
+  background-image: url(../../assets/photos/barbershop.png);
+  background-size: cover;
+  background-position: center;
+  background-attachment: fixed;
+  padding: 2rem 1rem;
+
+  .container {
+    max-width: 1200px;
+    margin: 0 auto;
+    background: rgba(0, 74, 86, 0.95);
+    border-radius: 20px;
+    overflow: hidden;
+    -webkit-box-shadow: 10px 10px 24px 2px rgba(0,0,0,0.75);
+    -moz-box-shadow: 10px 10px 24px 2px rgba(0,0,0,0.75);
+    box-shadow: 10px 10px 24px 2px rgba(0,0,0,0.75);
+    backdrop-filter: blur(10px);
+  }
+
+  .header {
+    background: linear-gradient(135deg, $primary-color 0%, darken($primary-color, 10%) 100%);
+    color: $secondary-color;
+    padding: 3rem 2rem;
+    text-align: center;
+
+    h1 {
+      margin: 0 0 1rem 0;
+      font-family: $primary-font;
+      font-size: 3rem;
+      font-weight: normal;
+      text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+      animation: fadeInDown 1s ease-out;
+    }
+
+    p {
+      margin: 0;
+      opacity: 0.9;
+      font-size: 1.2rem;
+      font-weight: 300;
+      animation: fadeInUp 1s ease-out 0.3s both;
+    }
+  }
+
+  .form {
+    padding: 3rem 2rem;
+    color: $secondary-color;
+
+    .section {
+      margin-bottom: 3rem;
+      animation: fadeInUp 0.8s ease-out;
+
+      h2 {
+        color: $secondary-color;
+        font-family: $primary-font;
+        font-size: 2rem;
+        margin-bottom: 2rem;
+        padding-bottom: 1rem;
+        border-bottom: 3px solid $accent-color;
+        text-shadow: 1px 1px 2px rgba(0,0,0,0.3);
+        position: relative;
+
+        &::after {
+          content: '';
+          position: absolute;
+          bottom: -3px;
+          left: 0;
+          width: 60px;
+          height: 3px;
+          background: linear-gradient(90deg, $accent-color, lighten($accent-color, 20%));
+          border-radius: 2px;
+        }
+      }
+    }
+
+    .errorMessage {
+      display: block;
+      color: lighten($error-color, 10%);
+      font-size: 0.875rem;
+      margin-top: 0.5rem;
+      font-weight: 500;
+      text-shadow: 1px 1px 2px rgba(0,0,0,0.3);
+    }
+
+    .inputError {
+      border-color: $error-color !important;
+      box-shadow: 0 0 0 4px rgba(229, 62, 62, 0.2) !important;
+    }
+  }
+
+  // Client Selection Styles
+  .clientSelection {
+    .searchContainer {
+      display: flex;
+      gap: 1rem;
+      margin-bottom: 2rem;
+
+      .searchInput {
+        flex: 1;
+        padding: 1rem 1.5rem;
+        border: 2px solid rgba(255, 255, 255, 0.2);
+        border-radius: 12px;
+        background: rgba(255, 255, 255, 0.1);
+        color: $secondary-color;
+        font-size: 1rem;
+        backdrop-filter: blur(5px);
+
+        &::placeholder {
+          color: rgba(249, 249, 249, 0.6);
+        }
+
+        &:focus {
+          outline: none;
+          border-color: $accent-color;
+          background: rgba(255, 255, 255, 0.15);
+        }
+      }
+
+      .newClientButton {
+        background: linear-gradient(135deg, $accent-color, lighten($accent-color, 10%));
+        color: white;
+        border: none;
+        padding: 1rem 2rem;
+        border-radius: 12px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        white-space: nowrap;
+
+        &:hover {
+          transform: translateY(-2px);
+          box-shadow: 0 8px 20px rgba(0, 188, 212, 0.3);
+        }
+      }
+    }
+
+    .newClientForm {
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 12px;
+      padding: 2rem;
+      margin-bottom: 2rem;
+      backdrop-filter: blur(5px);
+      border: 2px solid rgba(255, 255, 255, 0.1);
+
+      h3 {
+        margin: 0 0 1.5rem 0;
+        color: $accent-color;
+        font-size: 1.3rem;
+      }
+
+      .clientInputs {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 1rem;
+        margin-bottom: 1.5rem;
+
+        input {
+          padding: 1rem 1.25rem;
+          border: 2px solid rgba(255, 255, 255, 0.2);
+          border-radius: 8px;
+          background: rgba(255, 255, 255, 0.1);
+          color: $secondary-color;
+          font-size: 1rem;
+
+          &::placeholder {
+            color: rgba(249, 249, 249, 0.6);
+          }
+
+          &:focus {
+            outline: none;
+            border-color: $accent-color;
+            background: rgba(255, 255, 255, 0.15);
+          }
+        }
+      }
+
+      .clientActions {
+        display: flex;
+        gap: 1rem;
+
+        .addButton {
+          background: $success-color;
+          color: white;
+          border: none;
+          padding: 0.75rem 1.5rem;
+          border-radius: 8px;
+          font-weight: 600;
+          cursor: pointer;
+          transition: all 0.2s ease;
+
+          &:hover {
+            background: darken($success-color, 10%);
+          }
+        }
+
+        .cancelButton {
+          background: rgba(255, 255, 255, 0.1);
+          color: $secondary-color;
+          border: 2px solid rgba(255, 255, 255, 0.2);
+          padding: 0.75rem 1.5rem;
+          border-radius: 8px;
+          font-weight: 600;
+          cursor: pointer;
+          transition: all 0.2s ease;
+
+          &:hover {
+            background: rgba(255, 255, 255, 0.2);
+          }
+        }
+      }
+    }
+
+    .clientsList {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 1rem;
+
+      .clientCard {
+        background: rgba(255, 255, 255, 0.1);
+        border-radius: 12px;
+        padding: 1.5rem;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        border: 2px solid rgba(255, 255, 255, 0.1);
+        backdrop-filter: blur(5px);
+
+        &:hover {
+          background: rgba(255, 255, 255, 0.15);
+          transform: translateY(-2px);
+        }
+
+        &.selected {
+          border-color: $accent-color;
+          background: rgba(0, 188, 212, 0.2);
+          box-shadow: 0 0 20px rgba(0, 188, 212, 0.3);
+        }
+
+        .clientInfo {
+          h4 {
+            margin: 0 0 0.5rem 0;
+            font-size: 1.1rem;
+            color: $secondary-color;
+          }
+
+          p {
+            margin: 0.25rem 0;
+            font-size: 0.9rem;
+            opacity: 0.8;
+          }
+        }
+
+        .clientStats {
+          margin-top: 1rem;
+          font-size: 0.8rem;
+          color: $accent-color;
+          font-weight: 600;
+        }
+      }
+    }
+  }
+
+  // Employee Selection Styles
+  .employeeSelection {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 1.5rem;
+
+    .employeeCard {
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 12px;
+      padding: 1.5rem;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      border: 2px solid rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(5px);
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+
+      &:hover {
+        background: rgba(255, 255, 255, 0.15);
+        transform: translateY(-2px);
+      }
+
+      &.selected {
+        border-color: $accent-color;
+        background: rgba(0, 188, 212, 0.2);
+        box-shadow: 0 0 20px rgba(0, 188, 212, 0.3);
+      }
+
+      .employeeAvatar {
+        width: 60px;
+        height: 60px;
+        border-radius: 50%;
+        background: $accent-color;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: white;
+        flex-shrink: 0;
+      }
+
+      .employeeInfo {
+        h4 {
+          margin: 0 0 0.5rem 0;
+          font-size: 1.1rem;
+          color: $secondary-color;
+        }
+
+        .specialties {
+          display: flex;
+          flex-wrap: wrap;
+          gap: 0.5rem;
+
+          .specialty {
+            background: rgba(0, 188, 212, 0.2);
+            color: $accent-color;
+            padding: 0.25rem 0.75rem;
+            border-radius: 12px;
+            font-size: 0.8rem;
+            border: 1px solid rgba(0, 188, 212, 0.3);
+          }
+        }
+      }
+    }
+  }
+
+  // Services Selection Styles
+  .servicesSelection {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 1.5rem;
+
+    .serviceCard {
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 12px;
+      padding: 1.5rem;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      border: 2px solid rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(5px);
+
+      &:hover {
+        background: rgba(255, 255, 255, 0.15);
+        transform: translateY(-2px);
+      }
+
+      &.selected {
+        border-color: $accent-color;
+        background: rgba(0, 188, 212, 0.2);
+        box-shadow: 0 0 20px rgba(0, 188, 212, 0.3);
+      }
+
+      .serviceHeader {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        margin-bottom: 1rem;
+
+        h4 {
+          margin: 0;
+          font-size: 1.2rem;
+          color: $secondary-color;
+        }
+
+        .category {
+          background: rgba(0, 188, 212, 0.2);
+          color: $accent-color;
+          padding: 0.25rem 0.75rem;
+          border-radius: 12px;
+          font-size: 0.8rem;
+          border: 1px solid rgba(0, 188, 212, 0.3);
+        }
+      }
+
+      .description {
+        margin-bottom: 1rem;
+        font-size: 0.9rem;
+        opacity: 0.8;
+        line-height: 1.4;
+      }
+
+      .serviceDetails {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+
+        .duration {
+          background: rgba(255, 255, 255, 0.1);
+          padding: 0.5rem 1rem;
+          border-radius: 20px;
+          font-size: 0.9rem;
+          border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .price {
+          font-size: 1.3rem;
+          font-weight: 700;
+          color: $accent-color;
+        }
+      }
+    }
+  }
+
+  // Date and Time Selection Styles
+  .dateTimeSelection {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 2rem;
+    align-items: start;
+
+    @media (max-width: 768px) {
+      grid-template-columns: 1fr;
+    }
+
+    .dateInput {
+      label {
+        display: block;
+        margin-bottom: 0.75rem;
+        color: $secondary-color;
+        font-weight: 600;
+        font-size: 1rem;
+      }
+
+      input {
+        padding: 1rem 1.25rem;
+        border: 2px solid rgba(255, 255, 255, 0.2);
+        border-radius: 12px;
+        background: rgba(255, 255, 255, 0.1);
+        color: $secondary-color;
+        font-size: 1rem;
+        backdrop-filter: blur(5px);
+        min-width: 200px;
+
+        &:focus {
+          outline: none;
+          border-color: $accent-color;
+          background: rgba(255, 255, 255, 0.15);
+        }
+      }
+    }
+
+    .timeSlots {
+      label {
+        display: block;
+        margin-bottom: 0.75rem;
+        color: $secondary-color;
+        font-weight: 600;
+        font-size: 1rem;
+      }
+
+      .slotsGrid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
+        gap: 0.75rem;
+
+        .timeSlot {
+          background: rgba(255, 255, 255, 0.1);
+          border: 2px solid rgba(255, 255, 255, 0.2);
+          color: $secondary-color;
+          padding: 0.75rem;
+          border-radius: 8px;
+          cursor: pointer;
+          transition: all 0.3s ease;
+          font-weight: 600;
+
+          &:hover {
+            background: rgba(255, 255, 255, 0.2);
+            border-color: rgba(0, 188, 212, 0.5);
+          }
+
+          &.selected {
+            background: $accent-color;
+            border-color: $accent-color;
+            color: white;
+            box-shadow: 0 4px 12px rgba(0, 188, 212, 0.3);
+          }
+        }
+      }
+    }
+  }
+
+  // Notes Input
+  .notesInput {
+    width: 100%;
+    padding: 1rem 1.25rem;
+    border: 2px solid rgba(255, 255, 255, 0.2);
+    border-radius: 12px;
+    background: rgba(255, 255, 255, 0.1);
+    color: $secondary-color;
+    font-size: 1rem;
+    backdrop-filter: blur(5px);
+    resize: vertical;
+    font-family: inherit;
+
+    &::placeholder {
+      color: rgba(249, 249, 249, 0.6);
+    }
+
+    &:focus {
+      outline: none;
+      border-color: $accent-color;
+      background: rgba(255, 255, 255, 0.15);
+    }
+  }
+
+  // Summary Styles
+  .summary {
+    background: rgba(0, 188, 212, 0.1);
+    border-radius: 12px;
+    padding: 2rem;
+    border: 2px solid rgba(0, 188, 212, 0.3);
+
+    h2 {
+      color: $accent-color !important;
+      border-bottom-color: $accent-color !important;
+    }
+
+    .summaryContent {
+      .summaryItem {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 0.75rem 0;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+
+        &:last-child {
+          border-bottom: none;
+        }
+
+        span:first-child {
+          font-weight: 600;
+          opacity: 0.9;
+        }
+
+        span:last-child {
+          font-weight: 700;
+        }
+
+        .totalPrice {
+          color: $accent-color;
+          font-size: 1.2rem;
+        }
+      }
+    }
+  }
+
+  // Action Buttons
+  .actionButtons {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    margin-top: 2rem;
+
+    .cancelButton {
+      background: rgba(255, 255, 255, 0.1);
+      color: $secondary-color;
+      border: 2px solid rgba(255, 255, 255, 0.2);
+      padding: 1rem 2rem;
+      border-radius: 12px;
+      font-size: 1.1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      min-width: 150px;
+
+      &:hover {
+        background: rgba(255, 255, 255, 0.2);
+        transform: translateY(-2px);
+      }
+    }
+
+    .submitButton {
+      background: linear-gradient(135deg, $accent-color, lighten($accent-color, 10%));
+      color: white;
+      border: none;
+      padding: 1rem 2rem;
+      border-radius: 12px;
+      font-size: 1.1rem;
+      font-weight: 700;
+      font-family: $primary-font;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      min-width: 200px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+
+      &:hover:not(:disabled) {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 20px rgba(0, 188, 212, 0.3);
+      }
+
+      &:disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
+        transform: none;
+      }
+    }
+  }
+
+  .submitError {
+    background: rgba(229, 62, 62, 0.2);
+    border: 2px solid $error-color;
+    color: lighten($error-color, 10%);
+    padding: 1rem;
+    margin-top: 1rem;
+    border-radius: 8px;
+    text-align: center;
+    font-weight: 600;
+  }
+}
+
+// Animações
+@keyframes fadeInDown {
+  from {
+    opacity: 0;
+    transform: translateY(-30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+// Responsividade
+@media (max-width: 1024px) {
+  .createSchedulePage {
+    .container {
+      margin: 0 0.5rem;
+    }
+
+    .form {
+      padding: 2rem 1.5rem;
+
+      .section h2 {
+        font-size: 1.6rem;
+      }
+    }
+
+    .clientSelection .searchContainer {
+      flex-direction: column;
+    }
+
+    .employeeSelection {
+      grid-template-columns: 1fr;
+    }
+
+    .servicesSelection {
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    }
+  }
+}
+
+@media (max-width: 768px) {
+  .createSchedulePage {
+    padding: 1rem 0.5rem;
+
+    .header {
+      padding: 2rem 1rem;
+
+      h1 {
+        font-size: 2.2rem;
+      }
+    }
+
+    .form {
+      padding: 1.5rem 1rem;
+
+      .section h2 {
+        font-size: 1.4rem;
+      }
+    }
+
+    .clientSelection .clientsList {
+      grid-template-columns: 1fr;
+    }
+
+    .servicesSelection {
+      grid-template-columns: 1fr;
+    }
+
+    .actionButtons {
+      flex-direction: column;
+
+      .cancelButton,
+      .submitButton {
+        min-width: 100%;
+      }
+    }
+  }
+}

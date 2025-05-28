@@ -1,120 +1,465 @@
-.background{
-  display: flex; 
-  flex-wrap: wrap;
-  margin-left: auto;
-  margin-right: auto; 
-  align-items: start;
-  margin-top: 1.5rem; 
-  border-left-width: 2px; 
-  gap: 2.5rem; 
-  
-  .calendar{
-    width: 15rem; 
-    .header{
-      display: flex; 
-      justify-content: space-between; 
-      .title{
-        font-size: 1rem;
+@import '../../util/styles/variables.scss';
+@import '../../util/styles/mixins.scss';
+
+.calendarContainer {
+  display: flex;
+  gap: 2rem;
+  padding: 2rem;
+  background: rgba(0, 29, 34, 0.95);
+  min-height: 100vh;
+  color: $secondary-color;
+
+  @media (max-width: 1024px) {
+    flex-direction: column;
+    padding: 1rem;
+  }
+}
+
+// Calendar Styles
+.calendar {
+  flex: 1;
+  background: rgba(249, 249, 249, 0.1);
+  border-radius: 16px;
+  padding: 2rem;
+  backdrop-filter: blur(10px);
+  border: 2px solid rgba(249, 249, 249, 0.1);
+  animation: fadeInLeft 0.8s ease-out;
+
+  .calendarHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+    padding-bottom: 1rem;
+    border-bottom: 2px solid rgba(185, 149, 74, 0.3);
+
+    .monthYear {
+      font-family: $primary-font;
+      font-size: 2.2rem;
+      margin: 0;
+      color: $extra-color;
+      text-shadow: 1px 1px 2px rgba(0,0,0,0.3);
+    }
+
+    .calendarControls {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+
+      .navButton {
+        background: rgba(185, 149, 74, 0.2);
+        border: 2px solid rgba(185, 149, 74, 0.4);
+        color: $secondary-color;
+        padding: 0.75rem;
+        border-radius: 50%;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 45px;
+        height: 45px;
+
+        &:hover {
+          background: rgba(185, 149, 74, 0.4);
+          transform: scale(1.1);
+        }
+
+        svg {
+          font-size: 1.2rem;
+        }
+      }
+
+      .todayButton {
+        background: linear-gradient(135deg, $extra-color, lighten($extra-color, 10%));
+        border: none;
+        color: white;
+        padding: 0.75rem 1.5rem;
+        border-radius: 25px;
         font-weight: 600;
-      }
-      .nextPrevious{
-        display: flex; 
-        flex-basis: 50%;
-        align-items: center; 
-        cursor: pointer; 
-        gap: 1.25rem;
-        .todayHeader{
-          font-size: 1rem;
-        }
-        .next, .previous{
-          width: 1.25rem; 
-          height: 1.25rem; 
-          cursor: pointer; 
-        }
-      }
-    }
-    .days{
-      display: grid; 
-      color: #6B7280; 
-      width: 100%; 
-      grid-template-columns: repeat(7, minmax(0, 1fr)); 
-      .day{
-        display: grid; 
-        font-size: 0.875rem;
-        line-height: 1rem; 
-        place-content: center; 
-        height: 2.5rem; 
-      }
-    }
-    .boxDate{
-      display: grid; 
-      width: 100%; 
-      grid-template-columns: repeat(7, minmax(0, 1fr)); 
-      
-      .date{
-        display: grid; 
-        place-content: center; 
-        border-top-width: 1px;
-        .current{
-          color: #9CA3AF; 
-        }
-        .today{
-          background-color: #DC2626; 
-        }
-        .selectDate{
-          background-color: #000000; 
-          color: #ffffff; 
-        }
-        .tableDate{
-          display: grid; 
-          place-content: center; 
-          width: 2rem; 
-          height: 2rem; 
-          border-radius: 9999px; 
-          font-size: 1rem;
-          cursor: pointer; 
-            &:hover {
-            background-color: #000000; 
-            color: #ffffff; 
-            }
+        cursor: pointer;
+        transition: all 0.3s ease;
+
+        &:hover {
+          transform: translateY(-2px);
+          box-shadow: 0 8px 20px rgba(185, 149, 74, 0.3);
         }
       }
     }
   }
 
-  .backSchedule{
-    height: 100%;
-    overflow-y: auto;
-    .schedule{
+  .weekDays {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+
+    .weekDay {
+      text-align: center;
+      font-weight: 700;
+      color: $extra-color;
+      padding: 1rem 0;
+      font-size: 1.1rem;
+      border-bottom: 2px solid rgba(185, 149, 74, 0.3);
+    }
+  }
+
+  .datesGrid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 0.5rem;
+
+    .dateCell {
+      aspect-ratio: 1;
       display: flex;
-      flex-wrap: wrap;
-      .titleSchedule{
-        display: flex;
-        justify-content: center;
-        font-weight: 600; 
-        flex-basis: 100%;
-        text-align: center;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 0.5rem;
+      border-radius: 12px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      background: rgba(249, 249, 249, 0.05);
+      border: 2px solid transparent;
+      position: relative;
+      min-height: 60px;
+
+      &:hover {
+        background: rgba(249, 249, 249, 0.15);
+        transform: scale(1.05);
       }
-      .marcacaodiv{
-        width: 100%;
-        .card {
-          display: flex;
-          flex-wrap: wrap;
-          justify-content: space-between;
-          width: 99%;
-          height: 90px;
-          background: #ffff;
-          box-shadow: 0 1px 25px rgba(0,0,0,0.2);
-          padding: 10px 10px;
-          margin: 0.3rem;       
+
+      &.otherMonth {
+        opacity: 0.4;
+        
+        .dateNumber {
+          color: rgba(249, 249, 249, 0.5);
+        }
+      }
+
+      &.today {
+        background: rgba(185, 149, 74, 0.3);
+        border-color: $extra-color;
+        box-shadow: 0 0 15px rgba(185, 149, 74, 0.4);
+
+        .dateNumber {
+          color: white;
+          font-weight: 700;
+        }
+      }
+
+      &.selected {
+        background: linear-gradient(135deg, $extra-color, lighten($extra-color, 10%));
+        border-color: lighten($extra-color, 20%);
+        transform: scale(1.1);
+
+        .dateNumber {
+          color: white;
+          font-weight: 700;
+        }
+      }
+
+      &.hasAppointments {
+        border-color: rgba(185, 149, 74, 0.6);
+        
+        &::before {
+          content: '';
+          position: absolute;
+          top: 4px;
+          right: 4px;
+          width: 8px;
+          height: 8px;
+          background: $extra-color;
+          border-radius: 50%;
+          box-shadow: 0 0 8px rgba(185, 149, 74, 0.6);
+        }
+      }
+
+      .dateNumber {
+        font-size: 1.1rem;
+        font-weight: 600;
+        color: $secondary-color;
+        margin-bottom: 0.25rem;
+      }
+
+      .appointmentIndicator {
+        position: absolute;
+        bottom: 4px;
+        right: 4px;
+
+        .appointmentCount {
+          background: $extra-color;
+          color: white;
+          font-size: 0.7rem;
+          font-weight: 700;
+          padding: 0.2rem 0.4rem;
+          border-radius: 10px;
+          min-width: 16px;
+          text-align: center;
+          box-shadow: 0 2px 6px rgba(185, 149, 74, 0.4);
         }
       }
     }
   }
 }
 
-@keyframes load89234 {
-  100% {
-    background-position: -100% 0;
+// Schedule Styles
+.schedule {
+  flex: 1;
+  background: rgba(249, 249, 249, 0.1);
+  border-radius: 16px;
+  padding: 2rem;
+  backdrop-filter: blur(10px);
+  border: 2px solid rgba(249, 249, 249, 0.1);
+  animation: fadeInRight 0.8s ease-out;
+
+  .scheduleHeader {
+    margin-bottom: 2rem;
+    padding-bottom: 1rem;
+    border-bottom: 2px solid rgba(185, 149, 74, 0.3);
+
+    .scheduleTitle {
+      font-family: $primary-font;
+      font-size: 1.8rem;
+      margin: 0 0 1rem 0;
+      color: $extra-color;
+      text-shadow: 1px 1px 2px rgba(0,0,0,0.3);
+    }
+
+    .scheduleInfo {
+      display: flex;
+      gap: 1rem;
+      flex-wrap: wrap;
+
+      .dayOfWeek {
+        background: rgba(185, 149, 74, 0.2);
+        color: $extra-color;
+        padding: 0.5rem 1rem;
+        border-radius: 20px;
+        font-weight: 600;
+        border: 1px solid rgba(185, 149, 74, 0.3);
+      }
+
+      .employeeFilter {
+        background: rgba(185, 149, 74, 0.2);
+        color: $extra-color;
+        padding: 0.5rem 1rem;
+        border-radius: 20px;
+        font-weight: 600;
+        border: 1px solid rgba(185, 149, 74, 0.3);
+      }
+    }
+  }
+
+  .appointmentsList {
+    .noAppointments {
+      text-align: center;
+      padding: 4rem 2rem;
+      color: rgba(249, 249, 249, 0.7);
+
+      .emptyIcon {
+        font-size: 4rem;
+        margin-bottom: 1rem;
+        opacity: 0.5;
+      }
+
+      h3 {
+        margin: 0 0 1rem 0;
+        font-size: 1.5rem;
+        color: $secondary-color;
+      }
+
+      p {
+        margin: 0;
+        font-size: 1.1rem;
+      }
+    }
+
+    .appointmentsTable {
+      background: transparent !important;
+      color: $secondary-color !important;
+
+      thead th {
+        background: rgba(185, 149, 74, 0.2) !important;
+        color: $extra-color !important;
+        border: none !important;
+        font-weight: 700 !important;
+        padding: 1rem 0.75rem !important;
+        text-transform: uppercase !important;
+        font-size: 0.9rem !important;
+        letter-spacing: 1px !important;
+      }
+
+      tbody {
+        .appointmentRow {
+          background: rgba(249, 249, 249, 0.05) !important;
+          border: none !important;
+          cursor: pointer !important;
+          transition: all 0.3s ease !important;
+
+          &:hover {
+            background: rgba(249, 249, 249, 0.15) !important;
+            transform: translateX(5px) !important;
+          }
+
+          td {
+            border: none !important;
+            padding: 1rem 0.75rem !important;
+            vertical-align: middle !important;
+          }
+
+          .timeCell {
+            .timeRange {
+              display: flex;
+              flex-direction: column;
+              gap: 0.25rem;
+
+              .startTime {
+                font-weight: 700;
+                color: $extra-color;
+                font-size: 1.1rem;
+              }
+
+              .endTime {
+                font-size: 0.9rem;
+                opacity: 0.8;
+              }
+            }
+          }
+
+          .clientCell {
+            .clientInfo {
+              display: flex;
+              flex-direction: column;
+              gap: 0.25rem;
+
+              .clientName {
+                font-weight: 600;
+                color: $secondary-color;
+              }
+
+              .clientPhone {
+                font-size: 0.9rem;
+                opacity: 0.7;
+              }
+            }
+          }
+
+          .employeeCell {
+            font-weight: 600;
+            color: $secondary-color;
+          }
+
+          .servicesCell {
+            .servicesList {
+              display: flex;
+              flex-wrap: wrap;
+              gap: 0.5rem;
+
+              .serviceTag {
+                background: rgba(185, 149, 74, 0.2);
+                color: $extra-color;
+                padding: 0.25rem 0.75rem;
+                border-radius: 12px;
+                font-size: 0.8rem;
+                border: 1px solid rgba(185, 149, 74, 0.3);
+              }
+            }
+          }
+
+          .statusCell {
+            .statusBadge {
+              padding: 0.5rem 1rem;
+              border-radius: 20px;
+              font-size: 0.8rem;
+              font-weight: 600;
+              color: white;
+              text-transform: uppercase;
+              box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+            }
+          }
+
+          .priceCell {
+            font-weight: 700;
+            color: $extra-color;
+            font-size: 1.1rem;
+          }
+        }
+      }
+    }
+  }
+}
+
+// Animações
+@keyframes fadeInLeft {
+  from {
+    opacity: 0;
+    transform: translateX(-30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes fadeInRight {
+  from {
+    opacity: 0;
+    transform: translateX(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+// Responsividade
+@media (max-width: 768px) {
+  .calendarContainer {
+    padding: 1rem 0.5rem;
+  }
+
+  .calendar {
+    padding: 1.5rem 1rem;
+
+    .calendarHeader {
+      flex-direction: column;
+      gap: 1rem;
+      text-align: center;
+
+      .monthYear {
+        font-size: 1.8rem;
+      }
+    }
+
+    .datesGrid .dateCell {
+      min-height: 50px;
+      padding: 0.25rem;
+
+      .dateNumber {
+        font-size: 1rem;
+      }
+    }
+  }
+
+  .schedule {
+    padding: 1.5rem 1rem;
+
+    .scheduleHeader .scheduleTitle {
+      font-size: 1.4rem;
+    }
+
+    .appointmentsList .appointmentsTable {
+      font-size: 0.9rem;
+
+      thead th {
+        padding: 0.75rem 0.5rem !important;
+        font-size: 0.8rem !important;
+      }
+
+      tbody .appointmentRow td {
+        padding: 0.75rem 0.5rem !important;
+      }
+    }
   }
 }
