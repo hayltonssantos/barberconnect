@@ -10,6 +10,24 @@ export interface FirebaseUser {
   emailVerified: boolean;
 }
 
+export interface FormErrors {
+  [key: string]: string | undefined;
+}
+
+// Interface para formulário de login
+export interface LoginForm {
+  email: string;
+  password: string;
+}
+
+// Interface para formulário de registro
+export interface RegisterForm {
+  nome: string;
+  email: string;
+  password: string;
+  confirmPassword: string;
+}
+
 // Interface para dados do usuário no Firestore
 export interface User extends BaseEntity {
   email: string;
@@ -46,9 +64,4 @@ export interface RegisterForm {
   email: string;
   password: string;
   confirmPassword: string;
-}
-
-// Interface para erros de formulário
-export interface FormErrors {
-  [key: string]: string | undefined;
 }

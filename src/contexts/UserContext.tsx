@@ -1,6 +1,7 @@
 // src/contexts/UserContext.tsx
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
-import { User as FirebaseUser } from 'firebase/auth';
+import { User as FirebaseUser, onAuthStateChanged } from 'firebase/auth'; // ✅ Importar diretamente
+import { auth } from '@/services/firebase'; // ✅ Importar auth diretamente
 import { AuthService } from '@/services/authService';
 import type { User, AuthContextType } from '@/types';
 
@@ -16,9 +17,9 @@ export const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  // Observar mudanças no estado de autenticação
+  // ✅ USAR onAuthStateChanged DIRETAMENTE DO FIREBASE
   useEffect(() => {
-    const unsubscribe = AuthService.onAuthStateChanged(async (firebaseUser) => {
+    const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
       setUser(firebaseUser);
       
       if (firebaseUser) {
@@ -36,7 +37,7 @@ export const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
       setLoading(false);
     });
 
-    return () => unsubscribe();
+    return () => unsubscribe(); // ✅ Cleanup function
   }, []);
 
   const signIn = async (email: string, password: string): Promise<void> => {

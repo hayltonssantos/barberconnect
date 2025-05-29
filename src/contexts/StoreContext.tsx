@@ -95,30 +95,30 @@ export const StoreProvider: React.FC<StoreProviderProps> = ({ children }) => {
   }, [contribuinte, refreshData]);
 
   const updateFuncionario = useCallback(async (id: string, updates: Partial<Funcionario>): Promise<void> => {
-    if (!contribuinte) throw new Error('Contribuinte não definido');
+  if (!contribuinte) throw new Error('Contribuinte não definido');
 
-    try {
-      // Implementar atualização no service
-      await refreshData();
-    } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : 'Erro ao atualizar funcionário';
-      setError(errorMessage);
-      throw err;
-    }
-  }, [contribuinte, refreshData]);
+  try {
+    await BarbeariaService.atualizarFuncionario(contribuinte, id, updates);
+    await refreshData();
+  } catch (err) {
+    const errorMessage = err instanceof Error ? err.message : 'Erro ao atualizar funcionário';
+    setError(errorMessage);
+    throw err;
+  }
+}, [contribuinte, refreshData]);
 
-  const removeFuncionario = useCallback(async (id: string): Promise<void> => {
-    if (!contribuinte) throw new Error('Contribuinte não definido');
+const removeFuncionario = useCallback(async (id: string): Promise<void> => {
+  if (!contribuinte) throw new Error('Contribuinte não definido');
 
-    try {
-      // Implementar remoção no service
-      await refreshData();
-    } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : 'Erro ao remover funcionário';
-      setError(errorMessage);
-      throw err;
-    }
-  }, [contribuinte, refreshData]);
+  try {
+    await BarbeariaService.removerFuncionario(contribuinte, id);
+    await refreshData();
+  } catch (err) {
+    const errorMessage = err instanceof Error ? err.message : 'Erro ao remover funcionário';
+    setError(errorMessage);
+    throw err;
+  }
+}, [contribuinte, refreshData]);
 
   const getFuncionariosAtivos = useCallback((): Funcionario[] => {
     return funcionarios.filter(f => f.ativo);

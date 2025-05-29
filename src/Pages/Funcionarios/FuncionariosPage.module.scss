@@ -1,0 +1,607 @@
+// src/pages/Funcionarios/FuncionariosPage.module.scss
+.funcionariosPage {
+  min-height: 100vh;
+  background: linear-gradient(135deg, $background-color-primary 0%, darken($background-color-primary, 5%) 100%);
+  color: $secondary-color;
+  padding: 2rem 1rem;
+
+  .loading {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 50vh;
+    color: $secondary-color;
+
+    h2 {
+      font-family: $primary-font;
+      font-size: 2rem;
+      text-align: center;
+    }
+  }
+
+  .container {
+    max-width: 1400px;
+    margin: 0 auto;
+  }
+
+  .header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 3rem;
+    padding: 2rem;
+    background: rgba(249, 249, 249, 0.05);
+    border-radius: 16px;
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(249, 249, 249, 0.1);
+
+    .headerContent {
+      h1 {
+        font-family: $primary-font;
+        font-size: 2.5rem;
+        margin: 0 0 0.5rem 0;
+        color: $extra-color;
+        text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+        animation: fadeInLeft 1s ease-out;
+      }
+
+      p {
+        margin: 0;
+        font-size: 1.1rem;
+        opacity: 0.8;
+        animation: fadeInLeft 1s ease-out 0.3s both;
+      }
+    }
+
+    .newButton {
+      background: linear-gradient(135deg, $extra-color 0%, lighten($extra-color, 10%) 100%) !important;
+      border: none !important;
+      padding: 1rem 2rem !important;
+      border-radius: 12px !important;
+      font-weight: 700 !important;
+      font-size: 1.1rem !important;
+      transition: all 0.3s ease !important;
+      box-shadow: 0 4px 12px rgba(185, 149, 74, 0.3) !important;
+
+      &:hover {
+        transform: translateY(-2px) !important;
+        box-shadow: 0 8px 20px rgba(185, 149, 74, 0.4) !important;
+      }
+    }
+  }
+
+  .successAlert, .errorAlert {
+    margin-bottom: 2rem;
+    border-radius: 12px !important;
+    font-weight: 600 !important;
+    text-align: center;
+    animation: slideInDown 0.5s ease-out;
+  }
+
+  .successAlert {
+    background: rgba(72, 187, 120, 0.2) !important;
+    border: 2px solid #48bb78 !important;
+    color: #48bb78 !important;
+  }
+
+  .errorAlert {
+    background: rgba(219, 117, 24, 0.2) !important;
+    border: 2px solid $alert-color !important;
+    color: lighten($alert-color, 10%) !important;
+  }
+
+  // Lista de Funcionários
+  .funcionariosList {
+    animation: fadeInUp 0.8s ease-out;
+
+    .emptyState {
+      background: rgba(249, 249, 249, 0.05) !important;
+      border: 1px solid rgba(249, 249, 249, 0.1) !important;
+      border-radius: 16px !important;
+      backdrop-filter: blur(10px) !important;
+
+      .card-body {
+        padding: 4rem 2rem !important;
+        text-align: center;
+        color: $secondary-color !important;
+
+        .emptyContent {
+          h3 {
+            font-family: $primary-font;
+            font-size: 2rem;
+            color: $extra-color;
+            margin-bottom: 1rem;
+          }
+
+          p {
+            font-size: 1.1rem;
+            opacity: 0.8;
+            margin-bottom: 2rem;
+          }
+        }
+      }
+    }
+
+    .funcionarioCard {
+      background: rgba(249, 249, 249, 0.05) !important;
+      border: 1px solid rgba(249, 249, 249, 0.1) !important;
+      border-radius: 16px !important;
+      backdrop-filter: blur(10px) !important;
+      transition: all 0.3s ease !important;
+      height: 100%;
+
+      &:hover {
+        transform: translateY(-4px) !important;
+        box-shadow: 0 8px 25px rgba(0,0,0,0.2) !important;
+        border-color: rgba(185, 149, 74, 0.3) !important;
+      }
+
+      .card-body {
+        padding: 2rem !important;
+        color: $secondary-color !important;
+        display: flex;
+        flex-direction: column;
+        height: 100%;
+      }
+
+      .funcionarioHeader {
+        display: flex;
+        align-items: center;
+        gap: 1.5rem;
+        margin-bottom: 2rem;
+
+        .funcionarioAvatar {
+          width: 80px;
+          height: 80px;
+          border-radius: 50%;
+          background: linear-gradient(135deg, $extra-color 0%, lighten($extra-color, 10%) 100%);
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          font-size: 2rem;
+          font-weight: 700;
+          color: white;
+          text-shadow: 1px 1px 2px rgba(0,0,0,0.3);
+          box-shadow: 0 4px 12px rgba(185, 149, 74, 0.3);
+        }
+
+        .funcionarioInfo {
+          flex: 1;
+
+          h4 {
+            margin: 0 0 0.5rem 0;
+            color: $secondary-color;
+            font-weight: 600;
+            font-size: 1.3rem;
+          }
+
+          .funcionarioEmail,
+          .funcionarioTelefone {
+            margin: 0.25rem 0;
+            font-size: 0.9rem;
+            opacity: 0.8;
+            color: rgba(249, 249, 249, 0.7);
+          }
+        }
+      }
+
+      .especialidades {
+        margin-bottom: 1.5rem;
+
+        h5 {
+          margin: 0 0 1rem 0;
+          color: $extra-color;
+          font-weight: 600;
+          font-size: 1rem;
+          text-transform: uppercase;
+          letter-spacing: 1px;
+        }
+
+        .especialidadesTags {
+          display: flex;
+          flex-wrap: wrap;
+          gap: 0.5rem;
+
+          .especialidadeTag {
+            background: rgba(185, 149, 74, 0.2) !important;
+            color: $extra-color !important;
+            border: 1px solid rgba(185, 149, 74, 0.3) !important;
+            padding: 0.25rem 0.75rem !important;
+            border-radius: 15px !important;
+            font-size: 0.8rem !important;
+            font-weight: 500 !important;
+          }
+        }
+      }
+
+      .horarioResumo {
+        margin-bottom: 1.5rem;
+
+        h5 {
+          margin: 0 0 1rem 0;
+          color: $extra-color;
+          font-weight: 600;
+          font-size: 1rem;
+          text-transform: uppercase;
+          letter-spacing: 1px;
+        }
+
+        .diasTrabalho {
+          display: flex;
+          gap: 0.5rem;
+          flex-wrap: wrap;
+
+          .diaTag {
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 0.8rem;
+            text-transform: uppercase;
+
+            &.ativo {
+              background: rgba(72, 187, 120, 0.3);
+              color: #48bb78;
+              border: 2px solid #48bb78;
+            }
+
+            &.inativo {
+              background: rgba(249, 249, 249, 0.1);
+              color: rgba(249, 249, 249, 0.5);
+              border: 2px solid rgba(249, 249, 249, 0.2);
+            }
+          }
+        }
+      }
+
+      .financeiro {
+        margin-bottom: 1.5rem;
+        padding: 1rem;
+        background: rgba(249, 249, 249, 0.05);
+        border-radius: 8px;
+        border: 1px solid rgba(249, 249, 249, 0.1);
+
+        p {
+          margin: 0.25rem 0;
+          font-weight: 500;
+          color: $secondary-color;
+
+          &:first-child {
+            color: $extra-color;
+          }
+        }
+      }
+
+      .funcionarioActions {
+        margin-top: auto;
+        display: flex;
+        gap: 1rem;
+        justify-content: space-between;
+
+        .btn {
+          flex: 1;
+          border-radius: 8px !important;
+          font-weight: 600 !important;
+          transition: all 0.3s ease !important;
+
+          &.btn-outline-primary {
+            border-color: $extra-color !important;
+            color: $extra-color !important;
+
+            &:hover {
+              background: $extra-color !important;
+              border-color: $extra-color !important;
+              color: white !important;
+            }
+          }
+
+          &.btn-outline-danger {
+            border-color: $alert-color !important;
+            color: $alert-color !important;
+
+            &:hover {
+              background: $alert-color !important;
+              border-color: $alert-color !important;
+              color: white !important;
+            }
+          }
+        }
+      }
+    }
+  }
+
+  // Modal Styles
+  .modalSection {
+    background: rgba(249, 249, 249, 0.05) !important;
+    border: 1px solid rgba(249, 249, 249, 0.1) !important;
+    border-radius: 12px !important;
+    margin-bottom: 1.5rem;
+
+    .card-header {
+      background: rgba(185, 149, 74, 0.2) !important;
+      border-bottom: 1px solid rgba(185, 149, 74, 0.3) !important;
+      padding: 1rem 1.5rem !important;
+      border-radius: 12px 12px 0 0 !important;
+
+      h5 {
+        margin: 0;
+        color: $extra-color;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+      }
+    }
+
+    .card-body {
+      padding: 1.5rem !important;
+      color: $secondary-color !important;
+
+      .form-label {
+        color: $secondary-color;
+        font-weight: 600;
+        margin-bottom: 0.5rem;
+      }
+
+      .form-control {
+        background: rgba(249, 249, 249, 0.1) !important;
+        border: 2px solid rgba(249, 249, 249, 0.2) !important;
+        border-radius: 8px !important;
+        color: $secondary-color !important;
+        padding: 0.75rem !important;
+
+        &:focus {
+          background: rgba(249, 249, 249, 0.15) !important;
+          border-color: $extra-color !important;
+          box-shadow: 0 0 0 0.2rem rgba(185, 149, 74, 0.25) !important;
+          color: $secondary-color !important;
+        }
+
+        &.is-invalid {
+          border-color: $alert-color !important;
+          box-shadow: 0 0 0 0.2rem rgba(219, 117, 24, 0.25) !important;
+        }
+
+        &::placeholder {
+          color: rgba(249, 249, 249, 0.6) !important;
+        }
+      }
+
+      .invalid-feedback {
+        color: lighten($alert-color, 10%) !important;
+        font-weight: 500;
+        font-size: 0.875rem;
+      }
+    }
+  }
+
+  .especialidadesGrid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1rem;
+
+    .especialidadeCheck {
+      .form-check-input {
+        background-color: rgba(249, 249, 249, 0.1) !important;
+        border: 2px solid rgba(249, 249, 249, 0.2) !important;
+        margin-right: 0.75rem !important;
+
+        &:checked {
+          background-color: $extra-color !important;
+          border-color: $extra-color !important;
+        }
+
+        &:focus {
+          border-color: $extra-color !important;
+          box-shadow: 0 0 0 0.2rem rgba(185, 149, 74, 0.25) !important;
+        }
+      }
+
+      .form-check-label {
+        color: $secondary-color !important;
+        font-weight: 500 !important;
+        cursor: pointer !important;
+      }
+    }
+  }
+
+  .errorMessage {
+    color: lighten($alert-color, 10%);
+    font-weight: 500;
+    font-size: 0.875rem;
+    margin-top: 1rem;
+    text-align: center;
+    padding: 1rem;
+    background: rgba(219, 117, 24, 0.1);
+    border-radius: 8px;
+    border: 1px solid rgba(219, 117, 24, 0.3);
+  }
+}
+
+// Modal overrides
+:global(.modal-content) {
+  background: rgba(0, 29, 34, 0.95) !important;
+  border: 1px solid rgba(249, 249, 249, 0.1) !important;
+  border-radius: 16px !important;
+  backdrop-filter: blur(10px) !important;
+}
+
+:global(.modal-header) {
+  border-bottom: 1px solid rgba(249, 249, 249, 0.1) !important;
+  padding: 1.5rem !important;
+
+  .modal-title {
+    color: $extra-color !important;
+    font-family: $primary-font !important;
+    font-size: 1.5rem !important;
+  }
+
+  .btn-close {
+    filter: invert(1) !important;
+    opacity: 0.8 !important;
+
+    &:hover {
+      opacity: 1 !important;
+    }
+  }
+}
+
+:global(.modal-body) {
+  padding: 1.5rem !important;
+  color: $secondary-color !important;
+}
+
+:global(.modal-footer) {
+  border-top: 1px solid rgba(249, 249, 249, 0.1) !important;
+  padding: 1.5rem !important;
+
+  .btn {
+    border-radius: 8px !important;
+    font-weight: 600 !important;
+    padding: 0.75rem 1.5rem !important;
+
+    &.btn-secondary {
+      background: rgba(249, 249, 249, 0.1) !important;
+      border: 2px solid rgba(249, 249, 249, 0.2) !important;
+      color: $secondary-color !important;
+
+      &:hover {
+        background: rgba(249, 249, 249, 0.2) !important;
+        border-color: rgba(249, 249, 249, 0.4) !important;
+      }
+    }
+
+    &.btn-primary {
+      background: linear-gradient(135deg, $extra-color 0%, lighten($extra-color, 10%) 100%) !important;
+      border: none !important;
+      color: white !important;
+
+      &:hover {
+        background: linear-gradient(135deg, lighten($extra-color, 5%) 0%, lighten($extra-color, 15%) 100%) !important;
+      }
+
+      &:disabled {
+        opacity: 0.6 !important;
+        cursor: not-allowed !important;
+      }
+    }
+  }
+}
+
+// Animações
+@keyframes fadeInLeft {
+  from {
+    opacity: 0;
+    transform: translateX(-30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideInDown {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+// Responsividade
+@media (max-width: 1200px) {
+  .funcionariosPage {
+    padding: 1rem 0.5rem;
+
+    .header {
+      flex-direction: column;
+      gap: 1.5rem;
+      text-align: center;
+
+      .headerContent h1 {
+        font-size: 2rem;
+      }
+    }
+
+    .funcionariosList .funcionarioCard {
+      .funcionarioHeader {
+        flex-direction: column;
+        text-align: center;
+        gap: 1rem;
+      }
+    }
+  }
+}
+
+@media (max-width: 768px) {
+  .funcionariosPage {
+    .header {
+      padding: 1.5rem;
+
+      .headerContent h1 {
+        font-size: 1.8rem;
+      }
+    }
+
+    .funcionariosList .funcionarioCard {
+      .funcionarioHeader .funcionarioAvatar {
+        width: 60px;
+        height: 60px;
+        font-size: 1.5rem;
+      }
+
+      .horarioResumo .diasTrabalho .diaTag {
+        width: 30px;
+        height: 30px;
+        font-size: 0.7rem;
+      }
+
+      .funcionarioActions {
+        flex-direction: column;
+        gap: 0.5rem;
+      }
+    }
+
+    .especialidadesGrid {
+      grid-template-columns: 1fr;
+    }
+  }
+}
+
+@media (max-width: 480px) {
+  .funcionariosPage {
+    padding: 0.5rem;
+
+    .header {
+      padding: 1rem;
+
+      .headerContent h1 {
+        font-size: 1.5rem;
+      }
+    }
+
+    .funcionariosList .funcionarioCard .card-body {
+      padding: 1rem !important;
+    }
+
+    .modalSection .card-body {
+      padding: 1rem !important;
+    }
+  }
+}

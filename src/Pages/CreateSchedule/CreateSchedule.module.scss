@@ -1,374 +1,332 @@
-@import '../../util/styles/variables.scss';
-
-@font-face {
-  font-family: 'Amnestia';
-  src: url(../../assets/fonts/Amnestia.ttf);
-}
-
-$primary-font: 'Amnestia';
-$primary-color: #004a56;
-$secondary-color: #f9f9f9;
-$accent-color: #00bcd4;
-$success-color: #48bb78;
-$warning-color: #ed8936;
-$error-color: #e53e3e;
-
+// src/pages/CreateSchedule/CreateSchedule.module.scss
 .createSchedulePage {
   min-height: 100vh;
-  background-image: url(../../assets/photos/barbershop.png);
-  background-size: cover;
-  background-position: center;
-  background-attachment: fixed;
+  background: linear-gradient(135deg, $background-color-primary 0%, darken($background-color-primary, 5%) 100%);
+  color: $secondary-color;
   padding: 2rem 1rem;
+
+  .loading {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 50vh;
+    color: $secondary-color;
+
+    h2 {
+      font-family: $primary-font;
+      font-size: 2rem;
+      text-align: center;
+    }
+  }
 
   .container {
     max-width: 1200px;
     margin: 0 auto;
-    background: rgba(0, 74, 86, 0.95);
-    border-radius: 20px;
-    overflow: hidden;
-    -webkit-box-shadow: 10px 10px 24px 2px rgba(0,0,0,0.75);
-    -moz-box-shadow: 10px 10px 24px 2px rgba(0,0,0,0.75);
-    box-shadow: 10px 10px 24px 2px rgba(0,0,0,0.75);
-    backdrop-filter: blur(10px);
   }
 
   .header {
-    background: linear-gradient(135deg, $primary-color 0%, darken($primary-color, 10%) 100%);
-    color: $secondary-color;
-    padding: 3rem 2rem;
     text-align: center;
+    margin-bottom: 3rem;
+    padding: 2rem;
+    background: rgba(249, 249, 249, 0.05);
+    border-radius: 16px;
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(249, 249, 249, 0.1);
 
     h1 {
-      margin: 0 0 1rem 0;
       font-family: $primary-font;
       font-size: 3rem;
-      font-weight: normal;
+      margin: 0 0 1rem 0;
+      color: $extra-color;
       text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
       animation: fadeInDown 1s ease-out;
     }
 
     p {
       margin: 0;
-      opacity: 0.9;
       font-size: 1.2rem;
-      font-weight: 300;
+      opacity: 0.9;
       animation: fadeInUp 1s ease-out 0.3s both;
     }
   }
 
-  .form {
-    padding: 3rem 2rem;
-    color: $secondary-color;
-
-    .section {
-      margin-bottom: 3rem;
-      animation: fadeInUp 0.8s ease-out;
-
-      h2 {
-        color: $secondary-color;
-        font-family: $primary-font;
-        font-size: 2rem;
-        margin-bottom: 2rem;
-        padding-bottom: 1rem;
-        border-bottom: 3px solid $accent-color;
-        text-shadow: 1px 1px 2px rgba(0,0,0,0.3);
-        position: relative;
-
-        &::after {
-          content: '';
-          position: absolute;
-          bottom: -3px;
-          left: 0;
-          width: 60px;
-          height: 3px;
-          background: linear-gradient(90deg, $accent-color, lighten($accent-color, 20%));
-          border-radius: 2px;
-        }
-      }
-    }
-
-    .errorMessage {
-      display: block;
-      color: lighten($error-color, 10%);
-      font-size: 0.875rem;
-      margin-top: 0.5rem;
-      font-weight: 500;
-      text-shadow: 1px 1px 2px rgba(0,0,0,0.3);
-    }
-
-    .inputError {
-      border-color: $error-color !important;
-      box-shadow: 0 0 0 4px rgba(229, 62, 62, 0.2) !important;
-    }
+  .successAlert, .errorAlert {
+    margin-bottom: 2rem;
+    border-radius: 12px !important;
+    font-weight: 600 !important;
+    text-align: center;
+    animation: slideInDown 0.5s ease-out;
   }
 
-  // Client Selection Styles
-  .clientSelection {
-    .searchContainer {
+  .successAlert {
+    background: rgba(72, 187, 120, 0.2) !important;
+    border: 2px solid #48bb78 !important;
+    color: #48bb78 !important;
+  }
+
+  .errorAlert {
+    background: rgba(219, 117, 24, 0.2) !important;
+    border: 2px solid $alert-color !important;
+    color: lighten($alert-color, 10%) !important;
+  }
+
+  // Progress Steps
+  .progressSteps {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 3rem;
+    padding: 2rem;
+    background: rgba(249, 249, 249, 0.05);
+    border-radius: 16px;
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(249, 249, 249, 0.1);
+    overflow-x: auto;
+    gap: 1rem;
+
+    .step {
       display: flex;
-      gap: 1rem;
-      margin-bottom: 2rem;
-
-      .searchInput {
-        flex: 1;
-        padding: 1rem 1.5rem;
-        border: 2px solid rgba(255, 255, 255, 0.2);
-        border-radius: 12px;
-        background: rgba(255, 255, 255, 0.1);
-        color: $secondary-color;
-        font-size: 1rem;
-        backdrop-filter: blur(5px);
-
-        &::placeholder {
-          color: rgba(249, 249, 249, 0.6);
-        }
-
-        &:focus {
-          outline: none;
-          border-color: $accent-color;
-          background: rgba(255, 255, 255, 0.15);
-        }
-      }
-
-      .newClientButton {
-        background: linear-gradient(135deg, $accent-color, lighten($accent-color, 10%));
-        color: white;
-        border: none;
-        padding: 1rem 2rem;
-        border-radius: 12px;
-        font-weight: 600;
-        cursor: pointer;
-        transition: all 0.3s ease;
-        white-space: nowrap;
-
-        &:hover {
-          transform: translateY(-2px);
-          box-shadow: 0 8px 20px rgba(0, 188, 212, 0.3);
-        }
-      }
-    }
-
-    .newClientForm {
-      background: rgba(255, 255, 255, 0.1);
+      flex-direction: column;
+      align-items: center;
+      gap: 0.75rem;
+      padding: 1.5rem 1rem;
       border-radius: 12px;
-      padding: 2rem;
-      margin-bottom: 2rem;
-      backdrop-filter: blur(5px);
-      border: 2px solid rgba(255, 255, 255, 0.1);
-
-      h3 {
-        margin: 0 0 1.5rem 0;
-        color: $accent-color;
-        font-size: 1.3rem;
-      }
-
-      .clientInputs {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-        gap: 1rem;
-        margin-bottom: 1.5rem;
-
-        input {
-          padding: 1rem 1.25rem;
-          border: 2px solid rgba(255, 255, 255, 0.2);
-          border-radius: 8px;
-          background: rgba(255, 255, 255, 0.1);
-          color: $secondary-color;
-          font-size: 1rem;
-
-          &::placeholder {
-            color: rgba(249, 249, 249, 0.6);
-          }
-
-          &:focus {
-            outline: none;
-            border-color: $accent-color;
-            background: rgba(255, 255, 255, 0.15);
-          }
-        }
-      }
-
-      .clientActions {
-        display: flex;
-        gap: 1rem;
-
-        .addButton {
-          background: $success-color;
-          color: white;
-          border: none;
-          padding: 0.75rem 1.5rem;
-          border-radius: 8px;
-          font-weight: 600;
-          cursor: pointer;
-          transition: all 0.2s ease;
-
-          &:hover {
-            background: darken($success-color, 10%);
-          }
-        }
-
-        .cancelButton {
-          background: rgba(255, 255, 255, 0.1);
-          color: $secondary-color;
-          border: 2px solid rgba(255, 255, 255, 0.2);
-          padding: 0.75rem 1.5rem;
-          border-radius: 8px;
-          font-weight: 600;
-          cursor: pointer;
-          transition: all 0.2s ease;
-
-          &:hover {
-            background: rgba(255, 255, 255, 0.2);
-          }
-        }
-      }
-    }
-
-    .clientsList {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-      gap: 1rem;
-
-      .clientCard {
-        background: rgba(255, 255, 255, 0.1);
-        border-radius: 12px;
-        padding: 1.5rem;
-        cursor: pointer;
-        transition: all 0.3s ease;
-        border: 2px solid rgba(255, 255, 255, 0.1);
-        backdrop-filter: blur(5px);
-
-        &:hover {
-          background: rgba(255, 255, 255, 0.15);
-          transform: translateY(-2px);
-        }
-
-        &.selected {
-          border-color: $accent-color;
-          background: rgba(0, 188, 212, 0.2);
-          box-shadow: 0 0 20px rgba(0, 188, 212, 0.3);
-        }
-
-        .clientInfo {
-          h4 {
-            margin: 0 0 0.5rem 0;
-            font-size: 1.1rem;
-            color: $secondary-color;
-          }
-
-          p {
-            margin: 0.25rem 0;
-            font-size: 0.9rem;
-            opacity: 0.8;
-          }
-        }
-
-        .clientStats {
-          margin-top: 1rem;
-          font-size: 0.8rem;
-          color: $accent-color;
-          font-weight: 600;
-        }
-      }
-    }
-  }
-
-  // Employee Selection Styles
-  .employeeSelection {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-    gap: 1.5rem;
-
-    .employeeCard {
-      background: rgba(255, 255, 255, 0.1);
-      border-radius: 12px;
-      padding: 1.5rem;
       cursor: pointer;
       transition: all 0.3s ease;
-      border: 2px solid rgba(255, 255, 255, 0.1);
-      backdrop-filter: blur(5px);
-      display: flex;
-      align-items: center;
-      gap: 1rem;
+      min-width: 120px;
+      position: relative;
+      background: rgba(249, 249, 249, 0.05);
+      border: 2px solid rgba(249, 249, 249, 0.1);
 
       &:hover {
-        background: rgba(255, 255, 255, 0.15);
+        background: rgba(249, 249, 249, 0.1);
         transform: translateY(-2px);
       }
 
-      &.selected {
-        border-color: $accent-color;
-        background: rgba(0, 188, 212, 0.2);
-        box-shadow: 0 0 20px rgba(0, 188, 212, 0.3);
+      &.active {
+        background: rgba(185, 149, 74, 0.3);
+        border-color: $extra-color;
+        color: $extra-color;
+        box-shadow: 0 4px 12px rgba(185, 149, 74, 0.3);
       }
 
-      .employeeAvatar {
-        width: 60px;
-        height: 60px;
+      &.completed {
+        background: rgba(72, 187, 120, 0.2);
+        border-color: #48bb78;
+        color: #48bb78;
+
+        .stepIcon::after {
+          content: '✓';
+          position: absolute;
+          top: -5px;
+          right: -5px;
+          background: #48bb78;
+          color: white;
+          border-radius: 50%;
+          width: 20px;
+          height: 20px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          font-size: 0.8rem;
+          font-weight: 700;
+        }
+      }
+
+      .stepIcon {
+        font-size: 2rem;
+        position: relative;
+      }
+
+      .stepLabel {
+        font-weight: 600;
+        font-size: 0.9rem;
+        text-align: center;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+      }
+    }
+  }
+
+  .form {
+    .stepCard {
+      background: rgba(249, 249, 249, 0.05) !important;
+      border: 1px solid rgba(249, 249, 249, 0.1) !important;
+      border-radius: 16px !important;
+      backdrop-filter: blur(10px) !important;
+      margin-bottom: 2rem;
+      animation: fadeInUp 0.6s ease-out;
+
+      .card-header {
+        background: rgba(185, 149, 74, 0.2) !important;
+        border-bottom: 1px solid rgba(185, 149, 74, 0.3) !important;
+        padding: 2rem !important;
+        border-radius: 16px 16px 0 0 !important;
+
+        h3 {
+          margin: 0;
+          color: $extra-color;
+          font-family: $primary-font;
+          font-size: 1.8rem;
+          text-shadow: 1px 1px 2px rgba(0,0,0,0.3);
+        }
+      }
+
+      .card-body {
+        padding: 2rem !important;
+        color: $secondary-color !important;
+      }
+    }
+
+    .inputGroup {
+      margin-bottom: 2rem;
+
+      .form-label {
+        color: $secondary-color;
+        font-weight: 600;
+        font-size: 1rem;
+        margin-bottom: 0.75rem;
+        text-shadow: 1px 1px 2px rgba(0,0,0,0.3);
+      }
+
+      .input {
+        background: rgba(249, 249, 249, 0.1) !important;
+        border: 2px solid rgba(249, 249, 249, 0.2) !important;
+        border-radius: 12px !important;
+        color: $secondary-color !important;
+        padding: 1rem 1.25rem !important;
+        font-size: 1rem !important;
+        transition: all 0.3s ease !important;
+
+        &:focus {
+          background: rgba(249, 249, 249, 0.15) !important;
+          border-color: $extra-color !important;
+          box-shadow: 0 0 0 0.2rem rgba(185, 149, 74, 0.25) !important;
+          color: $secondary-color !important;
+        }
+
+        &.is-invalid {
+          border-color: $alert-color !important;
+          box-shadow: 0 0 0 0.2rem rgba(219, 117, 24, 0.25) !important;
+        }
+      }
+
+      .invalid-feedback {
+        color: lighten($alert-color, 10%) !important;
+        font-weight: 500;
+        font-size: 0.875rem;
+        margin-top: 0.5rem;
+      }
+    }
+
+    .newClientSection {
+      display: flex;
+      align-items: end;
+      height: 100%;
+
+      .newClientButton {
+        background: rgba(185, 149, 74, 0.2) !important;
+        border: 2px solid rgba(185, 149, 74, 0.4) !important;
+        color: $extra-color !important;
+        padding: 1rem 1.5rem !important;
+        border-radius: 12px !important;
+        font-weight: 600 !important;
+        transition: all 0.3s ease !important;
+        width: 100%;
+
+        &:hover {
+          background: rgba(185, 149, 74, 0.3) !important;
+          border-color: $extra-color !important;
+          transform: translateY(-2px) !important;
+        }
+      }
+    }
+
+    // Funcionário Cards
+    .funcionarioCard {
+      background: rgba(249, 249, 249, 0.05);
+      border: 2px solid rgba(249, 249, 249, 0.1);
+      border-radius: 16px;
+      padding: 2rem;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      height: 100%;
+
+      &:hover {
+        background: rgba(249, 249, 249, 0.1);
+        transform: translateY(-4px);
+        box-shadow: 0 8px 25px rgba(0,0,0,0.2);
+      }
+
+      &.selected {
+        background: rgba(185, 149, 74, 0.3);
+        border-color: $extra-color;
+        box-shadow: 0 8px 25px rgba(185, 149, 74, 0.3);
+      }
+
+      .funcionarioAvatar {
+        width: 80px;
+        height: 80px;
         border-radius: 50%;
-        background: $accent-color;
+        background: $extra-color;
         display: flex;
         align-items: center;
         justify-content: center;
-        font-size: 1.5rem;
+        font-size: 2rem;
         font-weight: 700;
         color: white;
-        flex-shrink: 0;
+        margin: 0 auto 1rem auto;
+        text-shadow: 1px 1px 2px rgba(0,0,0,0.3);
       }
 
-      .employeeInfo {
-        h4 {
-          margin: 0 0 0.5rem 0;
-          font-size: 1.1rem;
-          color: $secondary-color;
-        }
+      h4 {
+        margin-bottom: 1rem;
+        color: $secondary-color;
+        font-weight: 600;
+      }
 
-        .specialties {
-          display: flex;
-          flex-wrap: wrap;
-          gap: 0.5rem;
+      .especialidades {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+        justify-content: center;
 
-          .specialty {
-            background: rgba(0, 188, 212, 0.2);
-            color: $accent-color;
-            padding: 0.25rem 0.75rem;
-            border-radius: 12px;
-            font-size: 0.8rem;
-            border: 1px solid rgba(0, 188, 212, 0.3);
-          }
+        .especialidadeTag {
+          background: rgba(185, 149, 74, 0.2);
+          color: $extra-color;
+          padding: 0.25rem 0.75rem;
+          border-radius: 15px;
+          font-size: 0.8rem;
+          font-weight: 500;
+          border: 1px solid rgba(185, 149, 74, 0.3);
         }
       }
     }
-  }
 
-  // Services Selection Styles
-  .servicesSelection {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-    gap: 1.5rem;
-
-    .serviceCard {
-      background: rgba(255, 255, 255, 0.1);
-      border-radius: 12px;
+    // Serviço Cards
+    .servicoCard {
+      background: rgba(249, 249, 249, 0.05);
+      border: 2px solid rgba(249, 249, 249, 0.1);
+      border-radius: 16px;
       padding: 1.5rem;
       cursor: pointer;
       transition: all 0.3s ease;
-      border: 2px solid rgba(255, 255, 255, 0.1);
-      backdrop-filter: blur(5px);
+      height: 100%;
+      position: relative;
 
       &:hover {
-        background: rgba(255, 255, 255, 0.15);
-        transform: translateY(-2px);
+        background: rgba(249, 249, 249, 0.1);
+        transform: translateY(-4px);
+        box-shadow: 0 8px 25px rgba(0,0,0,0.2);
       }
 
       &.selected {
-        border-color: $accent-color;
-        background: rgba(0, 188, 212, 0.2);
-        box-shadow: 0 0 20px rgba(0, 188, 212, 0.3);
+        background: rgba(185, 149, 74, 0.3);
+        border-color: $extra-color;
+        box-shadow: 0 8px 25px rgba(185, 149, 74, 0.3);
       }
 
-      .serviceHeader {
+      .servicoHeader {
         display: flex;
         justify-content: space-between;
         align-items: flex-start;
@@ -376,254 +334,271 @@ $error-color: #e53e3e;
 
         h4 {
           margin: 0;
-          font-size: 1.2rem;
           color: $secondary-color;
+          font-weight: 600;
+          font-size: 1.1rem;
         }
 
-        .category {
-          background: rgba(0, 188, 212, 0.2);
-          color: $accent-color;
+        .servicoCategoria {
+          background: rgba(185, 149, 74, 0.2);
+          color: $extra-color;
           padding: 0.25rem 0.75rem;
-          border-radius: 12px;
+          border-radius: 15px;
           font-size: 0.8rem;
-          border: 1px solid rgba(0, 188, 212, 0.3);
+          font-weight: 500;
+          border: 1px solid rgba(185, 149, 74, 0.3);
         }
       }
 
-      .description {
-        margin-bottom: 1rem;
+      .servicoDescricao {
+        color: rgba(249, 249, 249, 0.8);
         font-size: 0.9rem;
-        opacity: 0.8;
+        margin-bottom: 1rem;
         line-height: 1.4;
       }
 
-      .serviceDetails {
+      .servicoDetails {
         display: flex;
         justify-content: space-between;
         align-items: center;
 
-        .duration {
-          background: rgba(255, 255, 255, 0.1);
-          padding: 0.5rem 1rem;
-          border-radius: 20px;
+        .servicoDuracao {
+          color: rgba(249, 249, 249, 0.7);
           font-size: 0.9rem;
-          border: 1px solid rgba(255, 255, 255, 0.2);
         }
 
-        .price {
-          font-size: 1.3rem;
+        .servicoPreco {
+          font-size: 1.2rem;
           font-weight: 700;
-          color: $accent-color;
+          color: $extra-color;
         }
       }
+
+      .selectedIcon {
+        position: absolute;
+        top: 1rem;
+        right: 1rem;
+        background: $extra-color;
+        color: white;
+        border-radius: 50%;
+        width: 30px;
+        height: 30px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 700;
+        font-size: 1.1rem;
+        box-shadow: 0 2px 8px rgba(185, 149, 74, 0.4);
+      }
     }
-  }
 
-  // Date and Time Selection Styles
-  .dateTimeSelection {
-    display: grid;
-    grid-template-columns: auto 1fr;
-    gap: 2rem;
-    align-items: start;
+    .servicosSummary {
+      margin-top: 2rem;
+      padding: 1.5rem;
+      background: rgba(185, 149, 74, 0.1);
+      border-radius: 12px;
+      border: 2px solid rgba(185, 149, 74, 0.3);
 
-    @media (max-width: 768px) {
-      grid-template-columns: 1fr;
-    }
-
-    .dateInput {
-      label {
-        display: block;
-        margin-bottom: 0.75rem;
-        color: $secondary-color;
+      h5 {
+        margin: 0 0 1rem 0;
+        color: $extra-color;
         font-weight: 600;
-        font-size: 1rem;
       }
 
-      input {
-        padding: 1rem 1.25rem;
-        border: 2px solid rgba(255, 255, 255, 0.2);
-        border-radius: 12px;
-        background: rgba(255, 255, 255, 0.1);
-        color: $secondary-color;
-        font-size: 1rem;
-        backdrop-filter: blur(5px);
-        min-width: 200px;
-
-        &:focus {
-          outline: none;
-          border-color: $accent-color;
-          background: rgba(255, 255, 255, 0.15);
-        }
-      }
-    }
-
-    .timeSlots {
-      label {
-        display: block;
-        margin-bottom: 0.75rem;
-        color: $secondary-color;
-        font-weight: 600;
-        font-size: 1rem;
-      }
-
-      .slotsGrid {
-        display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
-        gap: 0.75rem;
-
-        .timeSlot {
-          background: rgba(255, 255, 255, 0.1);
-          border: 2px solid rgba(255, 255, 255, 0.2);
-          color: $secondary-color;
-          padding: 0.75rem;
-          border-radius: 8px;
-          cursor: pointer;
-          transition: all 0.3s ease;
-          font-weight: 600;
-
-          &:hover {
-            background: rgba(255, 255, 255, 0.2);
-            border-color: rgba(0, 188, 212, 0.5);
-          }
-
-          &.selected {
-            background: $accent-color;
-            border-color: $accent-color;
-            color: white;
-            box-shadow: 0 4px 12px rgba(0, 188, 212, 0.3);
-          }
-        }
-      }
-    }
-  }
-
-  // Notes Input
-  .notesInput {
-    width: 100%;
-    padding: 1rem 1.25rem;
-    border: 2px solid rgba(255, 255, 255, 0.2);
-    border-radius: 12px;
-    background: rgba(255, 255, 255, 0.1);
-    color: $secondary-color;
-    font-size: 1rem;
-    backdrop-filter: blur(5px);
-    resize: vertical;
-    font-family: inherit;
-
-    &::placeholder {
-      color: rgba(249, 249, 249, 0.6);
-    }
-
-    &:focus {
-      outline: none;
-      border-color: $accent-color;
-      background: rgba(255, 255, 255, 0.15);
-    }
-  }
-
-  // Summary Styles
-  .summary {
-    background: rgba(0, 188, 212, 0.1);
-    border-radius: 12px;
-    padding: 2rem;
-    border: 2px solid rgba(0, 188, 212, 0.3);
-
-    h2 {
-      color: $accent-color !important;
-      border-bottom-color: $accent-color !important;
-    }
-
-    .summaryContent {
-      .summaryItem {
+      .summaryDetails {
         display: flex;
         justify-content: space-between;
-        align-items: center;
-        padding: 0.75rem 0;
-        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        gap: 2rem;
 
-        &:last-child {
-          border-bottom: none;
-        }
-
-        span:first-child {
+        span {
           font-weight: 600;
-          opacity: 0.9;
+          color: $secondary-color;
+        }
+      }
+    }
+
+    // Date Info
+    .dateInfo {
+      margin-top: 1.5rem;
+      padding: 1.5rem;
+      background: rgba(249, 249, 249, 0.05);
+      border-radius: 12px;
+      border: 1px solid rgba(249, 249, 249, 0.1);
+
+      p {
+        margin: 0;
+        color: $secondary-color;
+        font-weight: 500;
+      }
+    }
+
+    // Time Slots
+    .timeSlots {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+      gap: 1rem;
+      margin-top: 1rem;
+
+      .timeSlot {
+        background: rgba(249, 249, 249, 0.1);
+        border: 2px solid rgba(249, 249, 249, 0.2);
+        color: $secondary-color;
+        padding: 1rem;
+        border-radius: 12px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+
+        &:hover {
+          background: rgba(249, 249, 249, 0.15);
+          border-color: rgba(185, 149, 74, 0.5);
+          transform: translateY(-2px);
         }
 
-        span:last-child {
-          font-weight: 700;
+        &.selected {
+          background: rgba(185, 149, 74, 0.3);
+          border-color: $extra-color;
+          color: $extra-color;
+          box-shadow: 0 4px 12px rgba(185, 149, 74, 0.3);
+        }
+      }
+    }
+
+    // Confirmation Summary
+    .confirmationSummary {
+      .summarySection {
+        margin-bottom: 2rem;
+        padding: 1.5rem;
+        background: rgba(249, 249, 249, 0.05);
+        border-radius: 12px;
+        border: 1px solid rgba(249, 249, 249, 0.1);
+
+        h5 {
+          margin: 0 0 1rem 0;
+          color: $extra-color;
+          font-weight: 600;
+          font-size: 1.1rem;
+          text-transform: uppercase;
+          letter-spacing: 1px;
+        }
+
+        p {
+          margin: 0.5rem 0;
+          color: $secondary-color;
+          font-weight: 500;
+        }
+
+        ul {
+          list-style: none;
+          padding: 0;
+          margin: 0;
+
+          li {
+            padding: 0.5rem 0;
+            color: $secondary-color;
+            border-bottom: 1px solid rgba(249, 249, 249, 0.1);
+
+            &:last-child {
+              border-bottom: none;
+            }
+          }
         }
 
         .totalPrice {
-          color: $accent-color;
-          font-size: 1.2rem;
+          font-size: 2rem;
+          font-weight: 700;
+          color: $extra-color;
+          font-family: $primary-font;
+          text-shadow: 1px 1px 2px rgba(0,0,0,0.3);
         }
       }
     }
+
+    .errorMessage {
+      color: lighten($alert-color, 10%);
+      font-weight: 500;
+      font-size: 0.875rem;
+      margin-top: 1rem;
+      text-align: center;
+      padding: 1rem;
+      background: rgba(219, 117, 24, 0.1);
+      border-radius: 8px;
+      border: 1px solid rgba(219, 117, 24, 0.3);
+    }
   }
 
-  // Action Buttons
-  .actionButtons {
+  // Navigation Buttons
+  .navigationButtons {
     display: flex;
+    justify-content: space-between;
     gap: 1rem;
-    justify-content: center;
-    margin-top: 2rem;
+    margin-top: 3rem;
+    padding: 2rem;
+    background: rgba(249, 249, 249, 0.05);
+    border-radius: 16px;
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(249, 249, 249, 0.1);
 
-    .cancelButton {
-      background: rgba(255, 255, 255, 0.1);
-      color: $secondary-color;
-      border: 2px solid rgba(255, 255, 255, 0.2);
-      padding: 1rem 2rem;
-      border-radius: 12px;
-      font-size: 1.1rem;
-      font-weight: 600;
-      cursor: pointer;
-      transition: all 0.3s ease;
-      min-width: 150px;
+    .navButton {
+      background: rgba(249, 249, 249, 0.1) !important;
+      border: 2px solid rgba(249, 249, 249, 0.2) !important;
+      color: $secondary-color !important;
+      padding: 1rem 2rem !important;
+      border-radius: 12px !important;
+      font-weight: 600 !important;
+      transition: all 0.3s ease !important;
+      min-width: 150px !important;
 
-      &:hover {
-        background: rgba(255, 255, 255, 0.2);
-        transform: translateY(-2px);
+      &:hover:not(:disabled) {
+        background: rgba(249, 249, 249, 0.2) !important;
+        border-color: rgba(249, 249, 249, 0.4) !important;
+        transform: translateY(-2px) !important;
+      }
+
+      &:disabled {
+        opacity: 0.5 !important;
+        cursor: not-allowed !important;
+      }
+
+      &[variant="primary"] {
+        background: rgba(185, 149, 74, 0.2) !important;
+        border-color: rgba(185, 149, 74, 0.4) !important;
+        color: $extra-color !important;
+
+        &:hover:not(:disabled) {
+          background: rgba(185, 149, 74, 0.3) !important;
+          border-color: $extra-color !important;
+        }
       }
     }
 
     .submitButton {
-      background: linear-gradient(135deg, $accent-color, lighten($accent-color, 10%));
-      color: white;
-      border: none;
-      padding: 1rem 2rem;
-      border-radius: 12px;
-      font-size: 1.1rem;
-      font-weight: 700;
-      font-family: $primary-font;
-      cursor: pointer;
-      transition: all 0.3s ease;
-      min-width: 200px;
-      text-transform: uppercase;
-      letter-spacing: 1px;
+      background: linear-gradient(135deg, $extra-color 0%, lighten($extra-color, 10%) 100%) !important;
+      border: none !important;
+      color: white !important;
+      padding: 1rem 2rem !important;
+      border-radius: 12px !important;
+      font-weight: 700 !important;
+      font-family: $primary-font !important;
+      transition: all 0.3s ease !important;
+      min-width: 200px !important;
+      text-transform: uppercase !important;
+      letter-spacing: 1px !important;
+      box-shadow: 0 8px 20px rgba(185, 149, 74, 0.3) !important;
 
       &:hover:not(:disabled) {
-        transform: translateY(-2px);
-        box-shadow: 0 8px 20px rgba(0, 188, 212, 0.3);
+        transform: translateY(-2px) !important;
+        box-shadow: 0 12px 25px rgba(185, 149, 74, 0.4) !important;
+        background: linear-gradient(135deg, lighten($extra-color, 5%) 0%, lighten($extra-color, 15%) 100%) !important;
       }
 
       &:disabled {
-        opacity: 0.6;
-        cursor: not-allowed;
-        transform: none;
+        opacity: 0.6 !important;
+        cursor: not-allowed !important;
+        transform: none !important;
+        box-shadow: 0 4px 10px rgba(185, 149, 74, 0.2) !important;
       }
     }
-  }
-
-  .submitError {
-    background: rgba(229, 62, 62, 0.2);
-    border: 2px solid $error-color;
-    color: lighten($error-color, 10%);
-    padding: 1rem;
-    margin-top: 1rem;
-    border-radius: 8px;
-    text-align: center;
-    font-weight: 600;
   }
 }
 
@@ -650,69 +625,200 @@ $error-color: #e53e3e;
   }
 }
 
+@keyframes slideInDown {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
 // Responsividade
 @media (max-width: 1024px) {
   .createSchedulePage {
+    padding: 1rem 0.5rem;
+
     .container {
-      margin: 0 0.5rem;
+      max-width: 100%;
     }
 
-    .form {
-      padding: 2rem 1.5rem;
+    .header {
+      padding: 1.5rem;
 
-      .section h2 {
-        font-size: 1.6rem;
+      h1 {
+        font-size: 2.5rem;
       }
     }
 
-    .clientSelection .searchContainer {
-      flex-direction: column;
+    .progressSteps {
+      padding: 1rem;
+      gap: 0.5rem;
+
+      .step {
+        min-width: 100px;
+        padding: 1rem 0.5rem;
+
+        .stepIcon {
+          font-size: 1.5rem;
+        }
+
+        .stepLabel {
+          font-size: 0.8rem;
+        }
+      }
     }
 
-    .employeeSelection {
-      grid-template-columns: 1fr;
+    .form {
+      .stepCard .card-body {
+        padding: 1.5rem !important;
+      }
+
+      .servicosSummary .summaryDetails {
+        flex-direction: column;
+        gap: 1rem;
+      }
+
+      .timeSlots {
+        grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
+      }
     }
 
-    .servicesSelection {
-      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    .navigationButtons {
+      padding: 1.5rem;
+
+      .navButton,
+      .submitButton {
+        min-width: 120px !important;
+        padding: 0.875rem 1.5rem !important;
+      }
     }
   }
 }
 
 @media (max-width: 768px) {
   .createSchedulePage {
-    padding: 1rem 0.5rem;
+    .header h1 {
+      font-size: 2rem;
+    }
 
-    .header {
-      padding: 2rem 1rem;
+    .progressSteps {
+      flex-wrap: wrap;
+      justify-content: center;
 
-      h1 {
-        font-size: 2.2rem;
+      .step {
+        min-width: 80px;
+        padding: 0.75rem 0.5rem;
+
+        .stepLabel {
+          font-size: 0.7rem;
+        }
       }
     }
 
     .form {
-      padding: 1.5rem 1rem;
+      .funcionarioCard,
+      .servicoCard {
+        margin-bottom: 1rem;
+      }
 
-      .section h2 {
-        font-size: 1.4rem;
+      .timeSlots {
+        grid-template-columns: repeat(auto-fill, minmax(70px, 1fr));
+        gap: 0.5rem;
+
+        .timeSlot {
+          padding: 0.75rem 0.5rem;
+          font-size: 0.9rem;
+        }
+      }
+
+      .confirmationSummary .summarySection {
+        padding: 1rem;
       }
     }
 
-    .clientSelection .clientsList {
-      grid-template-columns: 1fr;
-    }
-
-    .servicesSelection {
-      grid-template-columns: 1fr;
-    }
-
-    .actionButtons {
+    .navigationButtons {
       flex-direction: column;
 
-      .cancelButton,
+      .navButton,
       .submitButton {
-        min-width: 100%;
+        width: 100% !important;
+        min-width: auto !important;
+      }
+    }
+  }
+}
+
+@media (max-width: 480px) {
+  .createSchedulePage {
+    padding: 0.5rem;
+
+    .header {
+      padding: 1rem;
+
+      h1 {
+        font-size: 1.8rem;
+      }
+
+      p {
+        font-size: 1rem;
+      }
+    }
+
+    .progressSteps {
+      padding: 0.5rem;
+
+      .step {
+        min-width: 60px;
+        padding: 0.5rem 0.25rem;
+
+        .stepIcon {
+          font-size: 1.2rem;
+        }
+
+        .stepLabel {
+          font-size: 0.6rem;
+        }
+      }
+    }
+
+    .form {
+      .stepCard {
+        .card-header {
+          padding: 1rem !important;
+
+          h3 {
+            font-size: 1.4rem;
+          }
+        }
+
+        .card-body {
+          padding: 1rem !important;
+        }
+      }
+
+      .funcionarioCard {
+        padding: 1rem;
+
+        .funcionarioAvatar {
+          width: 60px;
+          height: 60px;
+          font-size: 1.5rem;
+        }
+
+        h4 {
+          font-size: 1rem;
+        }
+      }
+
+      .servicoCard {
+        padding: 1rem;
+
+        .servicoHeader h4 {
+          font-size: 1rem;
+        }
       }
     }
   }

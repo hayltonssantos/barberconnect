@@ -123,6 +123,62 @@ export class BarbeariaService {
     }
   }
 
+   static async adicionarFuncionario(
+    contribuinte: string, 
+    funcionario: Omit<Funcionario, keyof BaseEntity>
+  ): Promise<string> {
+    try {
+      const funcionarioRef = doc(collection(db, 'barbearias', contribuinte, 'funcionarios'));
+      const funcionarioData = {
+        ...funcionario,
+        id: funcionarioRef.id,
+        ativo: true,
+        criadoEm: serverTimestamp(),
+        atualizadoEm: serverTimestamp()
+      };
+      
+      await setDoc(funcionarioRef, funcionarioData);
+      return funcionarioRef.id;
+    } catch (error) {
+      console.error('Erro ao adicionar funcionário:', error);
+      throw error;
+    }
+  }
+
+  static async atualizarFuncionario(
+    contribuinte: string,
+    funcionarioId: string,
+    updates: Partial<Funcionario>
+  ): Promise<void> {
+    try {
+      const funcionarioRef = doc(db, 'barbearias', contribuinte, 'funcionarios', funcionarioId);
+      await updateDoc(funcionarioRef, {
+        ...updates,
+        atualizadoEm: serverTimestamp()
+      });
+    } catch (error) {
+      console.error('Erro ao atualizar funcionário:', error);
+      throw error;
+    }
+  }
+
+  static async removerFuncionario(
+    contribuinte: string,
+    funcionarioId: string
+  ): Promise<void> {
+    try {
+      const funcionarioRef = doc(db, 'barbearias', contribuinte, 'funcionarios', funcionarioId);
+      await updateDoc(funcionarioRef, {
+        ativo: false,
+        atualizadoEm: serverTimestamp()
+      });
+    } catch (error) {
+      console.error('Erro ao remover funcionário:', error);
+      throw error;
+    }
+  }
+
+  
   // Buscar barbearia
   static async buscarBarbearia(contribuinte: string): Promise<Barbearia | null> {
     try {
@@ -186,27 +242,7 @@ export class BarbeariaService {
     }
   }
 
-  static async adicionarFuncionario(
-    contribuinte: string, 
-    funcionario: Omit<Funcionario, keyof BaseEntity>
-  ): Promise<string> {
-    try {
-      const funcionarioRef = doc(collection(db, 'barbearias', contribuinte, 'funcionarios'));
-      const funcionarioData = {
-        ...funcionario,
-        id: funcionarioRef.id,
-        ativo: true,
-        criadoEm: serverTimestamp(),
-        atualizadoEm: serverTimestamp()
-      };
-      
-      await setDoc(funcionarioRef, funcionarioData);
-      return funcionarioRef.id;
-    } catch (error) {
-      console.error('Erro ao adicionar funcionário:', error);
-      throw error;
-    }
-  }
+
 
   // ===== CLIENTES =====
   

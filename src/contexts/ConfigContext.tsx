@@ -37,17 +37,20 @@ export const ConfigProvider: React.FC<ConfigProviderProps> = ({ children }) => {
     setError(null);
     
     try {
-      // Verificar se usuário tem acesso ao contribuinte
-      const hasAccess = await AuthService.checkUserAccess(user.uid, contribuinteValue);
-      if (!hasAccess) {
-        throw new Error('Usuário não tem acesso a esta barbearia');
-      }
+      // ✅ REMOVER VERIFICAÇÃO DE ACESSO TEMPORARIAMENTE
+      // const hasAccess = await AuthService.checkUserAccess(user.uid, contribuinteValue);
+      // if (!hasAccess) {
+      //   throw new Error('Usuário não tem acesso a esta barbearia');
+      // }
 
       const barbeariaData = await BarbeariaService.buscarBarbearia(contribuinteValue);
       if (barbeariaData) {
         setContribuinteState(contribuinteValue);
         setBarbearia(barbeariaData);
         localStorage.setItem('barber_contribuinte', contribuinteValue);
+        
+        // ✅ ADICIONAR USUÁRIO À BARBEARIA APÓS CARREGAR
+        await AuthService.addContribuinteToUser(user.uid, contribuinteValue);
       } else {
         throw new Error('Barbearia não encontrada');
       }

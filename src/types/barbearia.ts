@@ -19,6 +19,8 @@ export interface Barbearia extends BaseEntity {
   criadoPor: string; // UID do usuário que criou
 }
 
+
+
 // Interface para funcionário
 export interface Funcionario extends BaseEntity {
   nome: string;
@@ -29,6 +31,23 @@ export interface Funcionario extends BaseEntity {
   avatar?: string;
   salario?: number;
   comissao?: number;
+}
+
+// ✅ ADICIONE ESTA INTERFACE QUE ESTAVA FALTANDO
+export interface ConfigContextType {
+  appName: string;
+  contribuinte: string | null;
+  barbearia: Barbearia | null;
+  isConfigured: boolean;
+  loading: boolean;
+  error: string | null;
+  
+  // Funções de configuração
+  setContribuinte: (contribuinte: string) => Promise<void>;
+  createBarbearia: (barbearia: Omit<Barbearia, keyof BaseEntity>) => Promise<void>;
+  updateBarbearia: (updates: Partial<Barbearia>) => Promise<void>;
+  clearConfiguration: () => void;
+  validateContribuinte: (contribuinte: string) => boolean;
 }
 
 // Interface para cliente
@@ -94,22 +113,7 @@ export interface RelatorioFinanceiro {
   }>;
 }
 
-// Interface para configuração do contexto
-export interface ConfigContextType {
-  appName: string;
-  contribuinte: string | null;
-  barbearia: Barbearia | null;
-  isConfigured: boolean;
-  loading: boolean;
-  error: string | null;
-  
-  // Funções de configuração
-  setContribuinte: (contribuinte: string) => Promise<void>;
-  createBarbearia: (barbearia: Omit<Barbearia, keyof BaseEntity>) => Promise<void>;
-  updateBarbearia: (updates: Partial<Barbearia>) => Promise<void>;
-  clearConfiguration: () => void;
-  validateContribuinte: (contribuinte: string) => boolean;
-}
+
 
 // Interface para contexto da loja/barbearia
 export interface StoreContextType {

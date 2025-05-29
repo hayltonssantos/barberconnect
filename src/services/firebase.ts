@@ -1,8 +1,8 @@
 // src/services/firebase.ts
 import { initializeApp } from 'firebase/app';
-import { getAuth, connectAuthEmulator } from 'firebase/auth';
-import { getFirestore, connectFirestoreEmulator } from 'firebase/firestore';
-import { getStorage, connectStorageEmulator } from 'firebase/storage';
+import { getAuth } from 'firebase/auth';
+import { getFirestore } from 'firebase/firestore';
+import { getStorage } from 'firebase/storage';
 import { getAnalytics } from 'firebase/analytics';
 
 // Configuração do Firebase usando variáveis de ambiente do Vite
@@ -35,7 +35,7 @@ for (const envVar of requiredEnvVars) {
 // Inicializar Firebase
 const app = initializeApp(firebaseConfig);
 
-// Inicializar serviços
+// Inicializar serviços - SEM EMULADORES
 export const auth = getAuth(app);
 export const db = getFirestore(app);
 export const storage = getStorage(app);
@@ -43,33 +43,9 @@ export const storage = getStorage(app);
 // Analytics (apenas em produção)
 export const analytics = import.meta.env.PROD ? getAnalytics(app) : null;
 
-// Conectar aos emuladores em desenvolvimento
-if (import.meta.env.DEV) {
-  try {
-    // Conectar ao emulador do Auth
-    if (!auth.config.emulator) {
-      connectAuthEmulator(auth, 'http://localhost:9099');
-    }
-    
-    // Conectar ao emulador do Firestore
-    if (!db._delegate._databaseId) {
-      connectFirestoreEmulator(db, 'localhost', 8080);
-    }
-    
-    // Conectar ao emulador do Storage
-    if (!storage._delegate._host) {
-      connectStorageEmulator(storage, 'localhost', 9199);
-    }
-    
-    console.log('🔥 Conectado aos emuladores Firebase');
-  } catch (error) {
-    console.log('📡 Usando Firebase em produção');
-  }
-}
-
 // Log da configuração (apenas em desenvolvimento)
 if (import.meta.env.DEV) {
-  console.log('🔧 Firebase configurado:', {
+  console.log('🔥 Firebase configurado:', {
     projectId: firebaseConfig.projectId,
     authDomain: firebaseConfig.authDomain,
     environment: import.meta.env.MODE

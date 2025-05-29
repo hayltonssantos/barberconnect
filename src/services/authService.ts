@@ -6,7 +6,6 @@ import {
   sendPasswordResetEmail,
   updateProfile,
   User as FirebaseUser,
-  onAuthStateChanged,
   AuthError
 } from 'firebase/auth';
 import {
@@ -14,11 +13,7 @@ import {
   setDoc,
   getDoc,
   updateDoc,
-  serverTimestamp,
-  collection,
-  query,
-  where,
-  getDocs
+  serverTimestamp
 } from 'firebase/firestore';
 import { auth, db } from './firebase';
 import type { User, UserRole } from '@/types';
@@ -145,7 +140,6 @@ export class AuthService {
       
       if (!userData) return false;
       
-      // Verificar se o usuário tem acesso ao contribuinte
       return userData.contribuintes.includes(contribuinte);
     } catch (error) {
       console.error('Erro ao verificar acesso do usuário:', error);
@@ -172,10 +166,10 @@ export class AuthService {
     }
   }
 
-  // Observar mudanças no estado de autenticação
-  static onAuthStateChanged(callback: (user: FirebaseUser | null) => void) {
-    return onAuthStateChanged(auth, callback);
-  }
+  // ✅ REMOVER ESTE MÉTODO - NÃO É NECESSÁRIO
+  // static onAuthStateChanged(callback: (user: FirebaseUser | null) => void) {
+  //   return onAuthStateChanged(auth, callback);
+  // }
 
   // Tratar erros de autenticação
   private static handleAuthError(error: AuthError): Error {

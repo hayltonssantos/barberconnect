@@ -13,6 +13,8 @@ import StorePage from '@/pages/Store/StorePage';
 import Loading from '@/components/ui/Loading/Loading';
 import { ErrorBoundary } from 'react-error-boundary';
 import './App.scss';
+import CreateSchedule from './Pages/CreateSchedule/CreateSchedule';
+import FuncionariosPage from './Pages/Funcionarios/FuncionariosPage';
 
 // Componente de erro
 const ErrorFallback: React.FC<{ error: Error; resetErrorBoundary: () => void }> = ({ 
@@ -61,6 +63,24 @@ const App: React.FC = () => {
                         </ProtectedRoute>
                       } 
                     />
+
+                    <Route 
+                      path="/create-schedule" 
+                      element={
+                        <ProtectedRoute requiresConfiguration={true}>
+                          <CreateSchedule />
+                        </ProtectedRoute>
+                      } 
+                    />
+
+                    <Route 
+                      path="/funcionarios" 
+                      element={
+                        <ProtectedRoute requiresConfiguration={true}>
+                          <FuncionariosPage />
+                        </ProtectedRoute>
+                      } 
+/>
                     
                     {/* Rotas protegidas que precisam de configuração */}
                     <Route 

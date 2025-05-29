@@ -1,195 +1,195 @@
-import React, { useState, useEffect, useContext } from 'react';
-import { useStore } from '../../contexts/StoreContext';
-import { useConfig } from '../../contexts/ConfigContext';
-import { UserContext } from '../../contexts/UserContext';
+// src/pages/CreateSchedule/CreateSchedule.tsx
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { Form, Row, Col, Button, Card, Alert, Modal } from 'react-bootstrap';
+import { useAuth } from '@/contexts/UserContext';
+import { useConfig } from '@/contexts/ConfigContext';
+import { useStore } from '@/contexts/StoreContext';
+import { useDate } from '@/contexts/DateContext';
+import type { Cliente, Funcionario, Servico, Agendamento, FormErrors } from '@/types';
 import styles from './CreateSchedule.module.scss';
 
-interface ScheduleForm {
-  clientId: number | null;
-  employeeId: number | null;
-  serviceIds: number[];
-  date: string;
-  startTime: string;
-  notes: string;
+interface AgendamentoForm {
+  clienteId: string;
+  funcionarioId: string;
+  servicoIds: string[];
+  data: Date | null;
+  horarioInicio: string;
+  observacoes: string;
+  novoCliente: {
+    nome: string;
+    email: string;
+    telefone: string;
+  };
 }
 
-export default function CreateSchedule() {
-  const { user } : any = useContext(UserContext);
-  const navigate = useNavigate();
-  
-  const {
-    clients,
-    employees,
-    services,
-    selectedEmployee,
-    setSelectedEmployee,
-    addAppointment,
-    addClient,
+const CreateSchedule: React.FC = () => {
+  const { user } = useAuth();
+  const { barbearia } = useConfig();
+  const { 
+    funcionarios, 
+    clientes, 
+    servicos, 
+    createAgendamento, 
+    addCliente,
     calculateTotalPrice,
-    getActiveEmployees,
-    getActiveServices
+    loading,
+    error 
   } = useStore();
+  
+  const { 
+    formatDate, 
+    formatTime, 
+    isToday, 
+    isPast, 
+    isWorkingDay,
+    getTimeSlots 
+  } = useDate();
+  
+  const navigate = useNavigate();
 
-  const { barberShopConfig, isConfigured } = useConfig();
-
-  const [form, setForm] = useState<ScheduleForm>({
-    clientId: null,
-    employeeId: selectedEmployee?.id || null,
-    serviceIds: [],
-    date: '',
-    startTime: '',
-    notes: ''
+  const [form, setForm] = useState<AgendamentoForm>({
+    clienteId: '',
+    funcionarioId: '',
+    servicoIds: [],
+    data: null,
+    horarioInicio: '',
+    observacoes: '',
+    novoCliente: {
+      nome: '',
+      email: '',
+      telefone: ''
+    }
   });
 
-  const [newClient, setNewClient] = useState({
-    name: '',
-    email: '',
-    phone: '',
-    isActive: true
-  });
+  const [errors, setErrors] = useState<FormErrors>({});
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [showSuccess, setShowSuccess] = useState(false);
+  const [showNewClientModal, setShowNewClientModal] = useState(false);
+  const [isCreatingClient, setIsCreatingClient] = useState(false);
+  const [availableTimeSlots, setAvailableTimeSlots] = useState<string[]>([]);
+  const [selectedStep, setSelectedStep] = useState<'cliente' | 'funcionario' | 'servicos' | 'data' | 'horario' | 'confirmacao'>('cliente');
 
-  const [showNewClientForm, setShowNewClientForm] = useState(false);
-  const [searchClient, setSearchClient] = useState('');
-  const [availableSlots, setAvailableSlots] = useState<string[]>([]);
-  const [isLoading, setIsLoading] = useState(false);
-  const [errors, setErrors] = useState<any>({});
+  // Calcular duração total e preço
+  const selectedServicos = servicos.filter(s => form.servicoIds.includes(s.id));
+  const duracaoTotal = selectedServicos.reduce((total, s) => total + s.duracao, 0);
+  const precoTotal = calculateTotalPrice(form.servicoIds);
 
-  // Verifica se usuário está logado
+  // Gerar horários disponíveis quando data e funcionário são selecionados
   useEffect(() => {
-    if (!user) {
-      navigate("/login", { replace: true });
+    if (form.data && form.funcionarioId && barbearia) {
+      generateAvailableTimeSlots();
     }
-  }, [user, navigate]);
+  }, [form.data, form.funcionarioId, selectedServicos]);
 
-  // Verifica se barbearia está configurada
-  useEffect(() => {
-    if (!isConfigured) {
-      navigate("/configuration", { replace: true });
-    }
-  }, [isConfigured, navigate]);
+  const generateAvailableTimeSlots = () => {
+    if (!form.data || !barbearia) return;
 
-  // Gera horários disponíveis baseado na configuração da barbearia
-  const generateAvailableSlots = (selectedDate: string, employeeId: number) => {
-    if (!selectedDate || !employeeId || !barberShopConfig) return [];
-
-    const date = new Date(selectedDate);
-    const dayName = date.toLocaleDateString('pt-BR', { weekday: 'long' }).toLowerCase();
+    const dayName = ['domingo', 'segunda', 'terça', 'quarta', 'quinta', 'sexta', 'sábado'][form.data.getDay()];
     
-    const employee = employees.find(emp => emp.id === employeeId);
-    if (!employee || !employee.workSchedule[dayName]?.isWorking) return [];
-
-    const { start, end } = employee.workSchedule[dayName];
-    const slots: string[] = [];
-    
-    const startTime = new Date(`2000-01-01T${start}:00`);
-    const endTime = new Date(`2000-01-01T${end}:00`);
-    const interval = barberShopConfig.configuracoesSistema.intervaloAgendamento;
-
-    while (startTime < endTime) {
-      slots.push(startTime.toTimeString().slice(0, 5));
-      startTime.setMinutes(startTime.getMinutes() + interval);
-    }
-
-    return slots;
-  };
-
-  // Atualiza horários disponíveis quando data ou funcionário mudam
-  useEffect(() => {
-    if (form.date && form.employeeId) {
-      const slots = generateAvailableSlots(form.date, form.employeeId);
-      setAvailableSlots(slots);
-      setForm(prev => ({ ...prev, startTime: '' }));
-    }
-  }, [form.date, form.employeeId, barberShopConfig]);
-
-  const handleFormChange = (field: keyof ScheduleForm, value: any) => {
-    setForm(prev => ({ ...prev, [field]: value }));
-    
-    // Limpa erro do campo
-    if (errors[field]) {
-      setErrors((prev: any) => ({ ...prev, [field]: undefined }));
-    }
-  };
-
-  const handleServiceToggle = (serviceId: number) => {
-    setForm(prev => ({
-      ...prev,
-      serviceIds: prev.serviceIds.includes(serviceId)
-        ? prev.serviceIds.filter(id => id !== serviceId)
-        : [...prev.serviceIds, serviceId]
-    }));
-  };
-
-  const handleNewClientChange = (field: string, value: string) => {
-    setNewClient(prev => ({ ...prev, [field]: value }));
-  };
-
-  const handleAddNewClient = () => {
-    if (!newClient.name || !newClient.email || !newClient.phone) {
-      setErrors({ newClient: 'Preencha todos os campos do cliente' });
+    // Verificar se é dia de funcionamento
+    if (!isWorkingDay(form.data, barbearia.horarioFuncionamento.diasFuncionamento)) {
+      setAvailableTimeSlots([]);
       return;
     }
 
+    // Gerar slots baseado no horário de funcionamento
+    const slots = getTimeSlots(
+      form.data,
+      barbearia.horarioFuncionamento.abertura,
+      barbearia.horarioFuncionamento.fechamento,
+      barbearia.configuracoesSistema.intervaloAgendamento
+    );
+
+    // Filtrar slots já ocupados (aqui você implementaria a lógica de verificação)
+    // Por enquanto, retornamos todos os slots
+    setAvailableTimeSlots(slots);
+  };
+
+  const handleInputChange = (field: keyof AgendamentoForm, value: any) => {
+    setForm(prev => ({
+      ...prev,
+      [field]: value
+    }));
+
+    // Limpar erro do campo
+    if (errors[field]) {
+      setErrors(prev => ({
+        ...prev,
+        [field]: undefined
+      }));
+    }
+  };
+
+  const handleNewClientChange = (field: keyof AgendamentoForm['novoCliente'], value: string) => {
+    setForm(prev => ({
+      ...prev,
+      novoCliente: {
+        ...prev.novoCliente,
+        [field]: value
+      }
+    }));
+  };
+
+  const handleServicoToggle = (servicoId: string) => {
+    const newServicos = form.servicoIds.includes(servicoId)
+      ? form.servicoIds.filter(id => id !== servicoId)
+      : [...form.servicoIds, servicoId];
+    
+    handleInputChange('servicoIds', newServicos);
+  };
+
+  const createNewClient = async () => {
+    setIsCreatingClient(true);
+    
     try {
-      addClient(newClient);
-      const clientId = Math.max(0, ...clients.map(c => c.id)) + 1;
-      setForm(prev => ({ ...prev, clientId }));
-      setShowNewClientForm(false);
-      setNewClient({ name: '', email: '', phone: '', isActive: true });
-      setErrors({});
-    } catch (error) {
-      setErrors({ newClient: 'Erro ao adicionar cliente' });
+      const clienteId = await addCliente({
+        nome: form.novoCliente.nome,
+        email: form.novoCliente.email,
+        telefone: form.novoCliente.telefone,
+        ativo: true
+      });
+
+      handleInputChange('clienteId', clienteId);
+      setShowNewClientModal(false);
+      setForm(prev => ({
+        ...prev,
+        novoCliente: { nome: '', email: '', telefone: '' }
+      }));
+    } catch (error: any) {
+      setErrors({ newClient: error.message });
+    } finally {
+      setIsCreatingClient(false);
     }
   };
 
   const validateForm = (): boolean => {
-    const newErrors: any = {};
+    const newErrors: FormErrors = {};
 
-    if (!form.clientId) {
-      newErrors.clientId = 'Selecione um cliente';
+    if (!form.clienteId) {
+      newErrors.clienteId = 'Selecione um cliente';
     }
 
-    if (!form.employeeId) {
-      newErrors.employeeId = 'Selecione um funcionário';
+    if (!form.funcionarioId) {
+      newErrors.funcionarioId = 'Selecione um funcionário';
     }
 
-    if (form.serviceIds.length === 0) {
-      newErrors.serviceIds = 'Selecione pelo menos um serviço';
+    if (form.servicoIds.length === 0) {
+      newErrors.servicoIds = 'Selecione pelo menos um serviço';
     }
 
-    if (!form.date) {
-      newErrors.date = 'Selecione uma data';
+    if (!form.data) {
+      newErrors.data = 'Selecione uma data';
+    } else if (isPast(form.data)) {
+      newErrors.data = 'Data não pode ser no passado';
     }
 
-    if (!form.startTime) {
-      newErrors.startTime = 'Selecione um horário';
-    }
-
-    // Verifica se a data não é no passado
-    if (form.date) {
-      const selectedDate = new Date(form.date);
-      const today = new Date();
-      today.setHours(0, 0, 0, 0);
-      
-      if (selectedDate < today) {
-        newErrors.date = 'Não é possível agendar para datas passadas';
-      }
+    if (!form.horarioInicio) {
+      newErrors.horarioInicio = 'Selecione um horário';
     }
 
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
-  };
-
-  const calculateEndTime = (startTime: string, serviceIds: number[]): string => {
-    const totalDuration = services
-      .filter(service => serviceIds.includes(service.id))
-      .reduce((total, service) => total + service.duration, 0);
-
-    const start = new Date(`2000-01-01T${startTime}:00`);
-    start.setMinutes(start.getMinutes() + totalDuration);
-    
-    return start.toTimeString().slice(0, 5);
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -197,303 +197,487 @@ export default function CreateSchedule() {
     
     if (!validateForm()) return;
 
-    setIsLoading(true);
+    setIsSubmitting(true);
+    setErrors({});
 
     try {
-      const endTime = calculateEndTime(form.startTime, form.serviceIds);
-      const totalPrice = calculateTotalPrice(form.serviceIds);
+      // Calcular horário de fim
+      const [horas, minutos] = form.horarioInicio.split(':').map(Number);
+      const dataInicio = new Date(form.data!);
+      dataInicio.setHours(horas, minutos, 0, 0);
+      
+      const dataFim = new Date(dataInicio);
+      dataFim.setMinutes(dataFim.getMinutes() + duracaoTotal);
 
-      const newAppointment = {
-        clientId: form.clientId!,
-        employeeId: form.employeeId!,
-        serviceIds: form.serviceIds,
-        date: new Date(form.date),
-        startTime: form.startTime,
-        endTime,
-        status: 'agendado' as const,
-        notes: form.notes,
-        totalPrice
+      const agendamentoData: Omit<Agendamento, keyof import('@/types').BaseEntity> = {
+        clienteId: form.clienteId,
+        funcionarioId: form.funcionarioId,
+        servicoIds: form.servicoIds,
+        data: form.data!,
+        horarioInicio: form.horarioInicio,
+        horarioFim: formatTime(dataFim),
+        status: 'agendado',
+        observacoes: form.observacoes,
+        precoTotal,
+        pago: false
       };
 
-      addAppointment(newAppointment);
+      await createAgendamento(agendamentoData);
 
-      // Reset form
-      setForm({
-        clientId: null,
-        employeeId: selectedEmployee?.id || null,
-        serviceIds: [],
-        date: '',
-        startTime: '',
-        notes: ''
-      });
+      setShowSuccess(true);
+      setTimeout(() => {
+        navigate('/store');
+      }, 2000);
 
-      alert('Agendamento criado com sucesso!');
-      navigate('/store');
-
-    } catch (error) {
+    } catch (error: any) {
       console.error('Erro ao criar agendamento:', error);
-      setErrors({ submit: 'Erro ao criar agendamento' });
+      setErrors({ submit: error.message || 'Erro ao criar agendamento' });
     } finally {
-      setIsLoading(false);
+      setIsSubmitting(false);
     }
   };
 
-  const filteredClients = clients.filter(client =>
-    client.isActive && (
-      client.name.toLowerCase().includes(searchClient.toLowerCase()) ||
-      client.email.toLowerCase().includes(searchClient.toLowerCase()) ||
-      client.phone.includes(searchClient)
-    )
-  );
+  const nextStep = () => {
+    const steps: typeof selectedStep[] = ['cliente', 'funcionario', 'servicos', 'data', 'horario', 'confirmacao'];
+    const currentIndex = steps.indexOf(selectedStep);
+    if (currentIndex < steps.length - 1) {
+      setSelectedStep(steps[currentIndex + 1]);
+    }
+  };
 
-  const totalPrice = calculateTotalPrice(form.serviceIds);
-  const selectedServices = services.filter(s => form.serviceIds.includes(s.id));
-  const totalDuration = selectedServices.reduce((total, s) => total + s.duration, 0);
+  const prevStep = () => {
+    const steps: typeof selectedStep[] = ['cliente', 'funcionario', 'servicos', 'data', 'horario', 'confirmacao'];
+    const currentIndex = steps.indexOf(selectedStep);
+    if (currentIndex > 0) {
+      setSelectedStep(steps[currentIndex - 1]);
+    }
+  };
+
+  const canProceed = () => {
+    switch (selectedStep) {
+      case 'cliente': return !!form.clienteId;
+      case 'funcionario': return !!form.funcionarioId;
+      case 'servicos': return form.servicoIds.length > 0;
+      case 'data': return !!form.data;
+      case 'horario': return !!form.horarioInicio;
+      default: return true;
+    }
+  };
+
+  if (loading) {
+    return (
+      <div className={styles.loading}>
+        <h2>Carregando dados...</h2>
+      </div>
+    );
+  }
 
   return (
     <div className={styles.createSchedulePage}>
       <div className={styles.container}>
         <header className={styles.header}>
           <h1>Nova Marcação</h1>
-          <p>Agende um novo atendimento para seus clientes</p>
+          <p>Agende um horário para seu cliente</p>
         </header>
 
-        <form onSubmit={handleSubmit} className={styles.form}>
-          {/* Seleção de Cliente */}
-          <section className={styles.section}>
-            <h2>Cliente</h2>
-            
-            <div className={styles.clientSelection}>
-              <div className={styles.searchContainer}>
-                <input
-                  type="text"
-                  placeholder="Buscar cliente por nome, email ou telefone..."
-                  value={searchClient}
-                  onChange={(e) => setSearchClient(e.target.value)}
-                  className={styles.searchInput}
-                />
-                <button
-                  type="button"
-                  onClick={() => setShowNewClientForm(!showNewClientForm)}
-                  className={styles.newClientButton}
-                >
-                  + Novo Cliente
-                </button>
-              </div>
+        {showSuccess && (
+          <Alert variant="success" className={styles.successAlert}>
+            ✓ Agendamento criado com sucesso! Redirecionando...
+          </Alert>
+        )}
 
-              {showNewClientForm && (
-                <div className={styles.newClientForm}>
-                  <h3>Adicionar Novo Cliente</h3>
-                  <div className={styles.clientInputs}>
-                    <input
-                      type="text"
-                      placeholder="Nome completo"
-                      value={newClient.name}
-                      onChange={(e) => handleNewClientChange('name', e.target.value)}
-                    />
-                    <input
-                      type="email"
-                      placeholder="Email"
-                      value={newClient.email}
-                      onChange={(e) => handleNewClientChange('email', e.target.value)}
-                    />
-                    <input
-                      type="tel"
-                      placeholder="Telefone"
-                      value={newClient.phone}
-                      onChange={(e) => handleNewClientChange('phone', e.target.value)}
-                    />
-                  </div>
-                  <div className={styles.clientActions}>
-                    <button type="button" onClick={handleAddNewClient} className={styles.addButton}>
-                      Adicionar
-                    </button>
-                    <button type="button" onClick={() => setShowNewClientForm(false)} className={styles.cancelButton}>
-                      Cancelar
-                    </button>
-                  </div>
-                  {errors.newClient && <span className={styles.errorMessage}>{errors.newClient}</span>}
-                </div>
-              )}
+        {error && (
+          <Alert variant="danger" className={styles.errorAlert}>
+            {error}
+          </Alert>
+        )}
 
-              <div className={styles.clientsList}>
-                {filteredClients.map(client => (
-                  <div
-                    key={client.id}
-                    className={`${styles.clientCard} ${form.clientId === client.id ? styles.selected : ''}`}
-                    onClick={() => handleFormChange('clientId', client.id)}
-                  >
-                    <div className={styles.clientInfo}>
-                      <h4>{client.name}</h4>
-                      <p>{client.email}</p>
-                      <p>{client.phone}</p>
-                    </div>
-                    <div className={styles.clientStats}>
-                      <span>{client.totalVisits} visitas</span>
-                    </div>
-                  </div>
-                ))}
-              </div>
-              {errors.clientId && <span className={styles.errorMessage}>{errors.clientId}</span>}
+        {/* Progress Steps */}
+        <div className={styles.progressSteps}>
+          {[
+            { key: 'cliente', label: 'Cliente', icon: '👤' },
+            { key: 'funcionario', label: 'Funcionário', icon: '👨‍💼' },
+            { key: 'servicos', label: 'Serviços', icon: '✂️' },
+            { key: 'data', label: 'Data', icon: '📅' },
+            { key: 'horario', label: 'Horário', icon: '⏰' },
+            { key: 'confirmacao', label: 'Confirmação', icon: '✅' }
+          ].map((step, index) => (
+            <div 
+              key={step.key}
+              className={`${styles.step} ${selectedStep === step.key ? styles.active : ''} ${
+                ['cliente', 'funcionario', 'servicos', 'data', 'horario'].indexOf(selectedStep) > index ? styles.completed : ''
+              }`}
+              onClick={() => setSelectedStep(step.key as any)}
+            >
+              <div className={styles.stepIcon}>{step.icon}</div>
+              <span className={styles.stepLabel}>{step.label}</span>
             </div>
-          </section>
+          ))}
+        </div>
 
-          {/* Seleção de Funcionário */}
-          <section className={styles.section}>
-            <h2>Funcionário</h2>
-            <div className={styles.employeeSelection}>
-              {getActiveEmployees().map(employee => (
-                <div
-                  key={employee.id}
-                  className={`${styles.employeeCard} ${form.employeeId === employee.id ? styles.selected : ''}`}
-                  onClick={() => handleFormChange('employeeId', employee.id)}
-                >
-                  <div className={styles.employeeAvatar}>
-                    {employee.name.charAt(0)}
-                  </div>
-                  <div className={styles.employeeInfo}>
-                    <h4>{employee.name}</h4>
-                    <div className={styles.specialties}>
-                      {employee.specialties.map(specialty => (
-                        <span key={specialty} className={styles.specialty}>
-                          {specialty}
-                        </span>
-                      ))}
+        <Form onSubmit={handleSubmit} className={styles.form}>
+          {/* Step 1: Cliente */}
+          {selectedStep === 'cliente' && (
+            <Card className={styles.stepCard}>
+              <Card.Header>
+                <h3>Selecionar Cliente</h3>
+              </Card.Header>
+              <Card.Body>
+                <Row>
+                  <Col md={8}>
+                    <Form.Group className={styles.inputGroup}>
+                      <Form.Label>Cliente *</Form.Label>
+                      <Form.Select
+                        value={form.clienteId}
+                        onChange={(e) => handleInputChange('clienteId', e.target.value)}
+                        isInvalid={!!errors.clienteId}
+                        className={styles.input}
+                      >
+                        <option value="">Selecione um cliente</option>
+                        {clientes.map(cliente => (
+                          <option key={cliente.id} value={cliente.id}>
+                            {cliente.nome} - {cliente.telefone}
+                          </option>
+                        ))}
+                      </Form.Select>
+                      <Form.Control.Feedback type="invalid">
+                        {errors.clienteId}
+                      </Form.Control.Feedback>
+                    </Form.Group>
+                  </Col>
+                  <Col md={4}>
+                    <div className={styles.newClientSection}>
+                      <Button 
+                        variant="outline-primary"
+                        onClick={() => setShowNewClientModal(true)}
+                        className={styles.newClientButton}
+                      >
+                        + Novo Cliente
+                      </Button>
+                    </div>
+                  </Col>
+                </Row>
+              </Card.Body>
+            </Card>
+          )}
+
+          {/* Step 2: Funcionário */}
+          {selectedStep === 'funcionario' && (
+            <Card className={styles.stepCard}>
+              <Card.Header>
+                <h3>Selecionar Funcionário</h3>
+              </Card.Header>
+              <Card.Body>
+                <Row>
+                  {funcionarios.filter(f => f.ativo).map(funcionario => (
+                    <Col key={funcionario.id} md={6} lg={4} className="mb-3">
+                      <div 
+                        className={`${styles.funcionarioCard} ${form.funcionarioId === funcionario.id ? styles.selected : ''}`}
+                        onClick={() => handleInputChange('funcionarioId', funcionario.id)}
+                      >
+                        <div className={styles.funcionarioAvatar}>
+                          {funcionario.nome.charAt(0)}
+                        </div>
+                        <h4>{funcionario.nome}</h4>
+                        <div className={styles.especialidades}>
+                          {funcionario.especialidades.map(esp => (
+                            <span key={esp} className={styles.especialidadeTag}>
+                              {esp}
+                            </span>
+                          ))}
+                        </div>
+                      </div>
+                    </Col>
+                  ))}
+                </Row>
+                {errors.funcionarioId && (
+                  <div className={styles.errorMessage}>{errors.funcionarioId}</div>
+                )}
+              </Card.Body>
+            </Card>
+          )}
+
+          {/* Step 3: Serviços */}
+          {selectedStep === 'servicos' && (
+            <Card className={styles.stepCard}>
+              <Card.Header>
+                <h3>Selecionar Serviços</h3>
+              </Card.Header>
+              <Card.Body>
+                <Row>
+                  {servicos.filter(s => s.ativo).map(servico => (
+                    <Col key={servico.id} md={6} lg={4} className="mb-3">
+                      <div 
+                        className={`${styles.servicoCard} ${form.servicoIds.includes(servico.id) ? styles.selected : ''}`}
+                        onClick={() => handleServicoToggle(servico.id)}
+                      >
+                        <div className={styles.servicoHeader}>
+                          <h4>{servico.nome}</h4>
+                          <span className={styles.servicoCategoria}>{servico.categoria}</span>
+                        </div>
+                        <p className={styles.servicoDescricao}>{servico.descricao}</p>
+                        <div className={styles.servicoDetails}>
+                          <span className={styles.servicoDuracao}>{servico.duracao} min</span>
+                          <span className={styles.servicoPreco}>R$ {servico.preco.toFixed(2)}</span>
+                        </div>
+                        {form.servicoIds.includes(servico.id) && (
+                          <div className={styles.selectedIcon}>✓</div>
+                        )}
+                      </div>
+                    </Col>
+                  ))}
+                </Row>
+                
+                {selectedServicos.length > 0 && (
+                  <div className={styles.servicosSummary}>
+                    <h5>Serviços Selecionados:</h5>
+                    <div className={styles.summaryDetails}>
+                      <span>Duração Total: {duracaoTotal} minutos</span>
+                      <span>Preço Total: R$ {precoTotal.toFixed(2)}</span>
                     </div>
                   </div>
-                </div>
-              ))}
-            </div>
-            {errors.employeeId && <span className={styles.errorMessage}>{errors.employeeId}</span>}
-          </section>
+                )}
+                
+                {errors.servicoIds && (
+                  <div className={styles.errorMessage}>{errors.servicoIds}</div>
+                )}
+              </Card.Body>
+            </Card>
+          )}
 
-          {/* Seleção de Serviços */}
-          <section className={styles.section}>
-            <h2>Serviços</h2>
-            <div className={styles.servicesSelection}>
-              {getActiveServices().map(service => (
-                <div
-                  key={service.id}
-                  className={`${styles.serviceCard} ${form.serviceIds.includes(service.id) ? styles.selected : ''}`}
-                  onClick={() => handleServiceToggle(service.id)}
-                >
-                  <div className={styles.serviceHeader}>
-                    <h4>{service.name}</h4>
-                    <span className={styles.category}>{service.category}</span>
+          {/* Step 4: Data */}
+          {selectedStep === 'data' && (
+            <Card className={styles.stepCard}>
+              <Card.Header>
+                <h3>Selecionar Data</h3>
+              </Card.Header>
+              <Card.Body>
+                <Form.Group className={styles.inputGroup}>
+                  <Form.Label>Data do Agendamento *</Form.Label>
+                  <Form.Control
+                    type="date"
+                    value={form.data ? form.data.toISOString().split('T')[0] : ''}
+                    onChange={(e) => {
+                      const date = e.target.value ? new Date(e.target.value + 'T00:00:00') : null;
+                      handleInputChange('data', date);
+                    }}
+                    min={new Date().toISOString().split('T')[0]}
+                    isInvalid={!!errors.data}
+                    className={styles.input}
+                  />
+                  <Form.Control.Feedback type="invalid">
+                    {errors.data}
+                  </Form.Control.Feedback>
+                </Form.Group>
+
+                {form.data && barbearia && (
+                  <div className={styles.dateInfo}>
+                    <p>
+                      <strong>Data selecionada:</strong> {formatDate(form.data, 'dddd, DD [de] MMMM [de] YYYY')}
+                    </p>
+                    {!isWorkingDay(form.data, barbearia.horarioFuncionamento.diasFuncionamento) && (
+                      <Alert variant="warning">
+                        Esta data não está nos dias de funcionamento da barbearia.
+                      </Alert>
+                    )}
                   </div>
-                  <p className={styles.description}>{service.description}</p>
-                  <div className={styles.serviceDetails}>
-                    <span className={styles.duration}>{service.duration} min</span>
-                    <span className={styles.price}>R$ {service.price.toFixed(2)}</span>
-                  </div>
-                </div>
-              ))}
-            </div>
-            {errors.serviceIds && <span className={styles.errorMessage}>{errors.serviceIds}</span>}
-          </section>
+                )}
+              </Card.Body>
+            </Card>
+          )}
 
-          {/* Seleção de Data e Horário */}
-          <section className={styles.section}>
-            <h2>Data e Horário</h2>
-            
-            <div className={styles.dateTimeSelection}>
-              <div className={styles.dateInput}>
-                <label>Data</label>
-                <input
-                  type="date"
-                  value={form.date}
-                  onChange={(e) => handleFormChange('date', e.target.value)}
-                  min={new Date().toISOString().split('T')[0]}
-                  className={errors.date ? styles.inputError : ''}
-                />
-                {errors.date && <span className={styles.errorMessage}>{errors.date}</span>}
-              </div>
-
-              {availableSlots.length > 0 && (
-                <div className={styles.timeSlots}>
-                  <label>Horário Disponível</label>
-                  <div className={styles.slotsGrid}>
-                    {availableSlots.map(slot => (
+          {/* Step 5: Horário */}
+          {selectedStep === 'horario' && (
+            <Card className={styles.stepCard}>
+              <Card.Header>
+                <h3>Selecionar Horário</h3>
+              </Card.Header>
+              <Card.Body>
+                {availableTimeSlots.length === 0 ? (
+                  <Alert variant="info">
+                    Nenhum horário disponível para a data selecionada.
+                  </Alert>
+                ) : (
+                  <div className={styles.timeSlots}>
+                    {availableTimeSlots.map(slot => (
                       <button
                         key={slot}
                         type="button"
-                        className={`${styles.timeSlot} ${form.startTime === slot ? styles.selected : ''}`}
-                        onClick={() => handleFormChange('startTime', slot)}
+                        className={`${styles.timeSlot} ${form.horarioInicio === slot ? styles.selected : ''}`}
+                        onClick={() => handleInputChange('horarioInicio', slot)}
                       >
                         {slot}
                       </button>
                     ))}
                   </div>
-                  {errors.startTime && <span className={styles.errorMessage}>{errors.startTime}</span>}
-                </div>
-              )}
-            </div>
-          </section>
-
-          {/* Observações */}
-          <section className={styles.section}>
-            <h2>Observações</h2>
-            <textarea
-              placeholder="Observações adicionais sobre o atendimento..."
-              value={form.notes}
-              onChange={(e) => handleFormChange('notes', e.target.value)}
-              className={styles.notesInput}
-              rows={4}
-            />
-          </section>
-
-          {/* Resumo do Agendamento */}
-          {form.serviceIds.length > 0 && (
-            <section className={styles.summary}>
-              <h2>Resumo do Agendamento</h2>
-              <div className={styles.summaryContent}>
-                <div className={styles.summaryItem}>
-                  <span>Serviços:</span>
-                  <span>{selectedServices.map(s => s.name).join(', ')}</span>
-                </div>
-                <div className={styles.summaryItem}>
-                  <span>Duração Total:</span>
-                  <span>{totalDuration} minutos</span>
-                </div>
-                <div className={styles.summaryItem}>
-                  <span>Valor Total:</span>
-                  <span className={styles.totalPrice}>R$ {totalPrice.toFixed(2)}</span>
-                </div>
-                {form.startTime && (
-                  <div className={styles.summaryItem}>
-                    <span>Horário:</span>
-                    <span>{form.startTime} - {calculateEndTime(form.startTime, form.serviceIds)}</span>
-                  </div>
                 )}
-              </div>
-            </section>
+                
+                {errors.horarioInicio && (
+                  <div className={styles.errorMessage}>{errors.horarioInicio}</div>
+                )}
+              </Card.Body>
+            </Card>
           )}
 
-          {/* Botões de Ação */}
-          <div className={styles.actionButtons}>
-            <button
-              type="button"
-              onClick={() => navigate('/store')}
-              className={styles.cancelButton}
+          {/* Step 6: Confirmação */}
+          {selectedStep === 'confirmacao' && (
+            <Card className={styles.stepCard}>
+              <Card.Header>
+                <h3>Confirmar Agendamento</h3>
+              </Card.Header>
+              <Card.Body>
+                <div className={styles.confirmationSummary}>
+                  <div className={styles.summarySection}>
+                    <h5>Cliente:</h5>
+                    <p>{clientes.find(c => c.id === form.clienteId)?.nome}</p>
+                  </div>
+                  
+                  <div className={styles.summarySection}>
+                    <h5>Funcionário:</h5>
+                    <p>{funcionarios.find(f => f.id === form.funcionarioId)?.nome}</p>
+                  </div>
+                  
+                  <div className={styles.summarySection}>
+                    <h5>Serviços:</h5>
+                    <ul>
+                      {selectedServicos.map(servico => (
+                        <li key={servico.id}>
+                          {servico.nome} - {servico.duracao}min - R$ {servico.preco.toFixed(2)}
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                  
+                  <div className={styles.summarySection}>
+                    <h5>Data e Horário:</h5>
+                    <p>
+                      {form.data && formatDate(form.data, 'DD/MM/YYYY')} às {form.horarioInicio}
+                    </p>
+                    <p>Duração total: {duracaoTotal} minutos</p>
+                  </div>
+                  
+                  <div className={styles.summarySection}>
+                    <h5>Valor Total:</h5>
+                    <p className={styles.totalPrice}>R$ {precoTotal.toFixed(2)}</p>
+                  </div>
+                </div>
+
+                <Form.Group className={styles.inputGroup}>
+                  <Form.Label>Observações</Form.Label>
+                  <Form.Control
+                    as="textarea"
+                    rows={3}
+                    value={form.observacoes}
+                    onChange={(e) => handleInputChange('observacoes', e.target.value)}
+                    placeholder="Observações adicionais (opcional)"
+                    className={styles.input}
+                  />
+                </Form.Group>
+
+                {errors.submit && (
+                  <Alert variant="danger" className={styles.errorAlert}>
+                    {errors.submit}
+                  </Alert>
+                )}
+              </Card.Body>
+            </Card>
+          )}
+
+          {/* Navigation Buttons */}
+          <div className={styles.navigationButtons}>
+            <Button 
+              variant="outline-secondary"
+              onClick={prevStep}
+              disabled={selectedStep === 'cliente'}
+              className={styles.navButton}
             >
-              Cancelar
-            </button>
-            <button
-              type="submit"
-              disabled={isLoading}
-              className={styles.submitButton}
-            >
-              {isLoading ? 'Criando...' : 'Criar Agendamento'}
-            </button>
+              ← Anterior
+            </Button>
+
+            {selectedStep !== 'confirmacao' ? (
+              <Button 
+                variant="primary"
+                onClick={nextStep}
+                disabled={!canProceed()}
+                className={styles.navButton}
+              >
+                Próximo →
+              </Button>
+            ) : (
+              <Button 
+                type="submit"
+                variant="success"
+                disabled={isSubmitting || !canProceed()}
+                className={styles.submitButton}
+              >
+                {isSubmitting ? 'Criando...' : 'Confirmar Agendamento'}
+              </Button>
+            )}
           </div>
+        </Form>
 
-          {errors.submit && (
-            <div className={styles.submitError}>
-              {errors.submit}
-            </div>
-          )}
-        </form>
+        {/* Modal Novo Cliente */}
+        <Modal show={showNewClientModal} onHide={() => setShowNewClientModal(false)} size="lg">
+          <Modal.Header closeButton>
+            <Modal.Title>Novo Cliente</Modal.Title>
+          </Modal.Header>
+          <Modal.Body>
+            <Form>
+              <Row>
+                <Col md={6}>
+                  <Form.Group className="mb-3">
+                    <Form.Label>Nome *</Form.Label>
+                    <Form.Control
+                      type="text"
+                      value={form.novoCliente.nome}
+                      onChange={(e) => handleNewClientChange('nome', e.target.value)}
+                      placeholder="Nome completo"
+                    />
+                  </Form.Group>
+                </Col>
+                <Col md={6}>
+                  <Form.Group className="mb-3">
+                    <Form.Label>Telefone *</Form.Label>
+                    <Form.Control
+                      type="tel"
+                      value={form.novoCliente.telefone}
+                      onChange={(e) => handleNewClientChange('telefone', e.target.value)}
+                      placeholder="(11) 99999-9999"
+                    />
+                  </Form.Group>
+                </Col>
+              </Row>
+              <Form.Group className="mb-3">
+                <Form.Label>Email *</Form.Label>
+                <Form.Control
+                  type="email"
+                  value={form.novoCliente.email}
+                  onChange={(e) => handleNewClientChange('email', e.target.value)}
+                  placeholder="email@exemplo.com"
+                />
+              </Form.Group>
+            </Form>
+            
+            {errors.newClient && (
+              <Alert variant="danger">{errors.newClient}</Alert>
+            )}
+          </Modal.Body>
+          <Modal.Footer>
+            <Button variant="secondary" onClick={() => setShowNewClientModal(false)}>
+              Cancelar
+            </Button>
+            <Button 
+              variant="primary" 
+              onClick={createNewClient}
+              disabled={isCreatingClient || !form.novoCliente.nome || !form.novoCliente.email || !form.novoCliente.telefone}
+            >
+              {isCreatingClient ? 'Criando...' : 'Criar Cliente'}
+            </Button>
+          </Modal.Footer>
+        </Modal>
       </div>
     </div>
   );
-}
+};
+
+export default CreateSchedule;
