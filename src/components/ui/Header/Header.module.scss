@@ -1,0 +1,405 @@
+@import '../../util/styles/variables.scss';
+@import '../../util/styles/mixins.scss';
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 2rem;
+  background: linear-gradient(135deg, $primary-color 0%, darken($primary-color, 10%) 100%);
+  color: $secondary-color;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+  backdrop-filter: blur(10px);
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  border-bottom: 3px solid $extra-color;
+
+  .leftSection {
+    display: flex;
+    align-items: center;
+    flex: 1;
+
+    .titleContainer {
+      display: flex;
+      flex-direction: column;
+      gap: 0.25rem;
+
+      .appTitle {
+        font-family: $primary-font;
+        font-size: 2rem;
+        margin: 0;
+        text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+        color: $secondary-color;
+        animation: fadeInLeft 1s ease-out;
+      }
+
+      .shopName {
+        font-size: 0.9rem;
+        opacity: 0.8;
+        color: $extra-color;
+        font-weight: 500;
+        animation: fadeInLeft 1s ease-out 0.3s both;
+      }
+    }
+  }
+
+  .navigation {
+    display: flex;
+    gap: 1rem;
+    flex: 1;
+    justify-content: center;
+
+    .navButton {
+      background: rgba(249, 249, 249, 0.1);
+      border: 2px solid rgba(249, 249, 249, 0.2);
+      color: $secondary-color;
+      padding: 0.75rem 1.5rem;
+      border-radius: 8px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      backdrop-filter: blur(5px);
+
+      &:hover {
+        background: rgba(249, 249, 249, 0.2);
+        border-color: $extra-color;
+        color: $extra-color;
+        transform: translateY(-2px);
+      }
+
+      &:active {
+        transform: translateY(0);
+      }
+    }
+  }
+
+  .rightSection {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    flex: 1;
+    justify-content: flex-end;
+  }
+
+  // Employee Dropdown Styles
+  .employeeDropdown {
+    .employeeToggle {
+      background: rgba(185, 149, 74, 0.2) !important;
+      border: 2px solid rgba(185, 149, 74, 0.4) !important;
+      color: $secondary-color !important;
+      padding: 0.75rem 1rem !important;
+      border-radius: 8px !important;
+      display: flex !important;
+      align-items: center !important;
+      gap: 0.5rem !important;
+      font-weight: 600 !important;
+      transition: all 0.3s ease !important;
+      backdrop-filter: blur(5px) !important;
+
+      &:hover, &:focus, &:active {
+        background: rgba(185, 149, 74, 0.3) !important;
+        border-color: $extra-color !important;
+        color: $secondary-color !important;
+        box-shadow: 0 0 0 0.2rem rgba(185, 149, 74, 0.25) !important;
+        transform: translateY(-2px) !important;
+      }
+
+      &::after {
+        margin-left: 0.5rem !important;
+        border-top-color: $secondary-color !important;
+      }
+
+      .employeeIcon {
+        font-size: 1.1rem;
+      }
+
+      .employeeText {
+        max-width: 150px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+    }
+
+    .employeeMenu {
+      background: rgba(0, 29, 34, 0.95) !important;
+      border: 2px solid rgba(185, 149, 74, 0.3) !important;
+      border-radius: 12px !important;
+      backdrop-filter: blur(10px) !important;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.3) !important;
+      padding: 0.5rem 0 !important;
+      min-width: 250px !important;
+
+      .dropdownHeader {
+        color: $extra-color !important;
+        font-weight: 700 !important;
+        font-size: 0.9rem !important;
+        text-transform: uppercase !important;
+        letter-spacing: 1px !important;
+        padding: 0.75rem 1rem 0.5rem !important;
+        border-bottom: 1px solid rgba(185, 149, 74, 0.3) !important;
+        margin-bottom: 0.5rem !important;
+      }
+
+      .employeeItem {
+        color: $secondary-color !important;
+        padding: 0.75rem 1rem !important;
+        border: none !important;
+        background: transparent !important;
+        display: flex !important;
+        justify-content: space-between !important;
+        align-items: center !important;
+        transition: all 0.2s ease !important;
+
+        &:hover {
+          background: rgba(185, 149, 74, 0.2) !important;
+          color: $secondary-color !important;
+        }
+
+        &.active {
+          background: rgba(185, 149, 74, 0.3) !important;
+          color: $extra-color !important;
+          font-weight: 600 !important;
+        }
+
+        .employeeInfo {
+          display: flex;
+          flex-direction: column;
+          align-items: flex-start;
+
+          .employeeName {
+            font-weight: 600;
+            font-size: 0.95rem;
+          }
+
+          .employeeSpecialties {
+            font-size: 0.8rem;
+            opacity: 0.7;
+            margin-top: 0.25rem;
+          }
+        }
+
+        .checkIcon {
+          color: $extra-color;
+          font-weight: 700;
+          font-size: 1.1rem;
+        }
+      }
+    }
+  }
+
+  // User Dropdown Styles
+  .userDropdown {
+    .userToggle {
+      background: rgba(249, 249, 249, 0.1) !important;
+      border: 2px solid rgba(249, 249, 249, 0.2) !important;
+      color: $secondary-color !important;
+      padding: 0.5rem 1rem !important;
+      border-radius: 25px !important;
+      display: flex !important;
+      align-items: center !important;
+      gap: 0.75rem !important;
+      font-weight: 600 !important;
+      transition: all 0.3s ease !important;
+      backdrop-filter: blur(5px) !important;
+
+      &:hover, &:focus, &:active {
+        background: rgba(249, 249, 249, 0.2) !important;
+        border-color: rgba(249, 249, 249, 0.4) !important;
+        color: $secondary-color !important;
+        box-shadow: 0 0 0 0.2rem rgba(249, 249, 249, 0.25) !important;
+        transform: translateY(-2px) !important;
+      }
+
+      &::after {
+        margin-left: 0.5rem !important;
+        border-top-color: $secondary-color !important;
+      }
+
+      .userAvatar {
+        width: 35px;
+        height: 35px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, $extra-color, lighten($extra-color, 20%));
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 700;
+        font-size: 1rem;
+        color: white;
+        text-shadow: 1px 1px 2px rgba(0,0,0,0.3);
+      }
+
+      .userName {
+        max-width: 120px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        text-transform: capitalize;
+      }
+    }
+
+    .userMenu {
+      background: rgba(0, 29, 34, 0.95) !important;
+      border: 2px solid rgba(249, 249, 249, 0.2) !important;
+      border-radius: 12px !important;
+      backdrop-filter: blur(10px) !important;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.3) !important;
+      padding: 0 !important;
+      min-width: 280px !important;
+
+      .dropdownHeader {
+        padding: 1rem !important;
+        border-bottom: 1px solid rgba(249, 249, 249, 0.2) !important;
+        margin-bottom: 0 !important;
+
+        .userInfo {
+          display: flex;
+          align-items: center;
+          gap: 1rem;
+
+          .userAvatarLarge {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, $extra-color, lighten($extra-color, 20%));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 1.3rem;
+            color: white;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.3);
+          }
+
+          .userDetails {
+            display: flex;
+            flex-direction: column;
+            gap: 0.25rem;
+
+            .userEmail {
+              color: $secondary-color;
+              font-weight: 600;
+              font-size: 0.95rem;
+            }
+
+            .userRole {
+              color: $extra-color;
+              font-size: 0.8rem;
+              font-weight: 500;
+            }
+          }
+        }
+      }
+
+      .menuItem {
+        color: $secondary-color !important;
+        padding: 0.75rem 1rem !important;
+        border: none !important;
+        background: transparent !important;
+        display: flex !important;
+        align-items: center !important;
+        gap: 0.75rem !important;
+        transition: all 0.2s ease !important;
+        font-weight: 500 !important;
+
+        &:hover {
+          background: rgba(249, 249, 249, 0.1) !important;
+          color: $secondary-color !important;
+        }
+
+        &.logoutItem {
+          color: lighten($alert-color, 10%) !important;
+          border-top: 1px solid rgba(249, 249, 249, 0.1) !important;
+          margin-top: 0.5rem !important;
+
+          &:hover {
+            background: rgba(219, 117, 24, 0.2) !important;
+            color: lighten($alert-color, 5%) !important;
+          }
+        }
+
+        .menuIcon {
+          font-size: 1.1rem;
+          width: 20px;
+          text-align: center;
+        }
+      }
+    }
+  }
+}
+
+// Animações
+@keyframes fadeInLeft {
+  from {
+    opacity: 0;
+    transform: translateX(-30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+// Responsividade
+@media (max-width: 1024px) {
+  .header {
+    padding: 1rem 1.5rem;
+
+    .navigation {
+      display: none;
+    }
+
+    .leftSection .titleContainer .appTitle {
+      font-size: 1.6rem;
+    }
+  }
+}
+
+@media (max-width: 768px) {
+  .header {
+    padding: 1rem;
+    flex-wrap: wrap;
+    gap: 1rem;
+
+    .leftSection {
+      flex: none;
+    }
+
+    .rightSection {
+      flex: none;
+      gap: 0.5rem;
+    }
+
+    .employeeDropdown .employeeToggle .employeeText {
+      display: none;
+    }
+
+    .userDropdown .userToggle .userName {
+      display: none;
+    }
+
+    .employeeDropdown .employeeMenu,
+    .userDropdown .userMenu {
+      min-width: 200px !important;
+    }
+  }
+}
+
+@media (max-width: 480px) {
+  .header {
+    .leftSection .titleContainer .appTitle {
+      font-size: 1.4rem;
+    }
+
+    .rightSection {
+      .employeeDropdown,
+      .userDropdown {
+        .dropdown-toggle {
+          padding: 0.5rem !important;
+        }
+      }
+    }
+  }
+}

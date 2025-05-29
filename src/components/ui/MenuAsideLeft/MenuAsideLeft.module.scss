@@ -1,0 +1,352 @@
+// MenuAsideLeft.module.scss
+@import '../../util/styles/variables.scss';
+@import '../../util/styles/mixins.scss';
+
+.menuAside {
+  width: 280px;
+  min-height: 100vh;
+  background: linear-gradient(180deg, $primary-color 0%, darken($primary-color, 15%) 100%);
+  color: $secondary-color;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 4px 0 12px rgba(0,0,0,0.3);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+
+  .header {
+    padding: 2rem 1.5rem;
+    border-bottom: 2px solid rgba(185, 149, 74, 0.3);
+    text-align: center;
+
+    .logoContainer {
+      margin-bottom: 1.5rem;
+
+      .logo {
+        width: 80px;
+        height: 80px;
+        border-radius: 50%;
+        object-fit: cover;
+        border: 3px solid $extra-color;
+        box-shadow: 0 4px 12px rgba(185, 149, 74, 0.3);
+        transition: all 0.3s ease;
+
+        &:hover {
+          transform: scale(1.05);
+          box-shadow: 0 6px 16px rgba(185, 149, 74, 0.4);
+        }
+      }
+    }
+
+    .storeInfo {
+      .storeName {
+        font-family: $primary-font;
+        font-size: 1.4rem;
+        margin: 0 0 0.5rem 0;
+        color: $extra-color;
+        text-shadow: 1px 1px 2px rgba(0,0,0,0.3);
+        font-weight: normal;
+      }
+
+      .storeAddress {
+        font-size: 0.8rem;
+        opacity: 0.8;
+        margin: 0;
+        line-height: 1.3;
+        color: rgba(249, 249, 249, 0.7);
+      }
+    }
+  }
+
+  .navigation {
+    flex: 1;
+    padding: 1.5rem 1rem;
+    overflow-y: auto;
+
+    .menuSection {
+      margin-bottom: 2rem;
+
+      .sectionTitle {
+        font-size: 0.9rem;
+        font-weight: 700;
+        color: $extra-color;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        margin: 0 0 1rem 0;
+        padding: 0 0.5rem;
+        opacity: 0.9;
+      }
+
+      .menuItems {
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+      }
+    }
+  }
+
+  .menuButton {
+    background: rgba(249, 249, 249, 0.05) !important;
+    border: 2px solid rgba(249, 249, 249, 0.1) !important;
+    color: $secondary-color !important;
+    padding: 1rem 1.25rem !important;
+    border-radius: 12px !important;
+    font-weight: 600 !important;
+    transition: all 0.3s ease !important;
+    display: flex !important;
+    align-items: center !important;
+    gap: 1rem !important;
+    text-align: left !important;
+    width: 100% !important;
+    backdrop-filter: blur(5px) !important;
+
+    &:hover {
+      background: rgba(249, 249, 249, 0.15) !important;
+      border-color: rgba(185, 149, 74, 0.5) !important;
+      color: $secondary-color !important;
+      transform: translateX(5px) !important;
+      box-shadow: 0 4px 12px rgba(185, 149, 74, 0.2) !important;
+    }
+
+    &:focus, &:active {
+      background: rgba(249, 249, 249, 0.15) !important;
+      border-color: rgba(185, 149, 74, 0.5) !important;
+      color: $secondary-color !important;
+      box-shadow: 0 0 0 0.2rem rgba(185, 149, 74, 0.25) !important;
+    }
+
+    &.active {
+      background: rgba(185, 149, 74, 0.3) !important;
+      border-color: $extra-color !important;
+      color: $secondary-color !important;
+      box-shadow: 0 4px 16px rgba(185, 149, 74, 0.4) !important;
+      transform: translateX(8px) !important;
+
+      .icon {
+        color: $extra-color !important;
+        transform: scale(1.1) !important;
+      }
+    }
+
+    &.danger {
+      background: rgba(219, 117, 24, 0.2) !important;
+      border-color: rgba(219, 117, 24, 0.4) !important;
+      color: lighten($alert-color, 10%) !important;
+
+      &:hover {
+        background: rgba(219, 117, 24, 0.3) !important;
+        border-color: $alert-color !important;
+        color: lighten($alert-color, 5%) !important;
+        transform: translateX(5px) !important;
+      }
+
+      &:focus, &:active {
+        background: rgba(219, 117, 24, 0.3) !important;
+        border-color: $alert-color !important;
+        color: lighten($alert-color, 5%) !important;
+        box-shadow: 0 0 0 0.2rem rgba(219, 117, 24, 0.25) !important;
+      }
+    }
+
+    .icon {
+      font-size: 1.2rem;
+      transition: all 0.3s ease;
+      flex-shrink: 0;
+    }
+
+    .label {
+      font-size: 0.95rem;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+  }
+
+  .footer {
+    padding: 1.5rem 1rem;
+    border-top: 2px solid rgba(185, 149, 74, 0.3);
+    margin-top: auto;
+
+    .userInfo {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      padding: 1rem;
+      background: rgba(249, 249, 249, 0.05);
+      border-radius: 12px;
+      margin-bottom: 1rem;
+      border: 2px solid rgba(249, 249, 249, 0.1);
+
+      .userAvatar {
+        width: 45px;
+        height: 45px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, $extra-color, lighten($extra-color, 20%));
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 700;
+        font-size: 1.2rem;
+        color: white;
+        text-shadow: 1px 1px 2px rgba(0,0,0,0.3);
+        flex-shrink: 0;
+      }
+
+      .userDetails {
+        display: flex;
+        flex-direction: column;
+        gap: 0.25rem;
+        min-width: 0;
+
+        .userName {
+          font-weight: 600;
+          color: $secondary-color;
+          font-size: 0.95rem;
+          text-transform: capitalize;
+          white-space: nowrap;
+          overflow: hidden;
+          text-overflow: ellipsis;
+        }
+
+        .userRole {
+          font-size: 0.8rem;
+          color: $extra-color;
+          font-weight: 500;
+        }
+      }
+    }
+  }
+}
+
+// Responsividade
+@media (max-width: 1024px) {
+  .menuAside {
+    width: 250px;
+
+    .header {
+      padding: 1.5rem 1rem;
+
+      .logoContainer .logo {
+        width: 60px;
+        height: 60px;
+      }
+
+      .storeInfo .storeName {
+        font-size: 1.2rem;
+      }
+    }
+
+    .menuButton {
+      padding: 0.875rem 1rem !important;
+
+      .icon {
+        font-size: 1.1rem;
+      }
+
+      .label {
+        font-size: 0.9rem;
+      }
+    }
+  }
+}
+
+@media (max-width: 768px) {
+  .menuAside {
+    width: 70px;
+    
+    .header {
+      padding: 1rem 0.5rem;
+
+      .logoContainer .logo {
+        width: 45px;
+        height: 45px;
+      }
+
+      .storeInfo {
+        display: none;
+      }
+    }
+
+    .navigation {
+      padding: 1rem 0.5rem;
+
+      .menuSection .sectionTitle {
+        display: none;
+      }
+    }
+
+    .menuButton {
+      padding: 1rem 0.5rem !important;
+      justify-content: center !important;
+
+      .label {
+        display: none;
+      }
+
+      .icon {
+        font-size: 1.3rem;
+      }
+
+      &:hover {
+        transform: none !important;
+      }
+
+      &.active {
+        transform: none !important;
+      }
+    }
+
+    .footer {
+      padding: 1rem 0.5rem;
+
+      .userInfo {
+        flex-direction: column;
+        padding: 0.75rem 0.5rem;
+        gap: 0.5rem;
+
+        .userAvatar {
+          width: 35px;
+          height: 35px;
+          font-size: 1rem;
+        }
+
+        .userDetails {
+          display: none;
+        }
+      }
+    }
+  }
+}
+
+@media (max-width: 480px) {
+  .menuAside {
+    position: fixed;
+    left: -280px;
+    transition: left 0.3s ease;
+    width: 280px;
+    z-index: 1000;
+
+    &.open {
+      left: 0;
+    }
+  }
+}
+
+// Scrollbar customization
+.menuAside .navigation::-webkit-scrollbar {
+  width: 4px;
+}
+
+.menuAside .navigation::-webkit-scrollbar-track {
+  background: rgba(249, 249, 249, 0.1);
+  border-radius: 2px;
+}
+
+.menuAside .navigation::-webkit-scrollbar-thumb {
+  background: rgba(185, 149, 74, 0.5);
+  border-radius: 2px;
+
+  &:hover {
+    background: rgba(185, 149, 74, 0.7);
+  }
+}

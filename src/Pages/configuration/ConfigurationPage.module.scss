@@ -1,0 +1,402 @@
+// src/pages/Configuration/ConfigurationPage.module.scss
+.configurationPage {
+  min-height: 100vh;
+  background-image: url('../../assets/images/barbershop.png');
+  background-size: cover;
+  background-position: center;
+  background-attachment: fixed;
+  padding: 2rem 1rem;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+
+  .container {
+    max-width: 1000px;
+    width: 100%;
+    background: rgba(0, 29, 34, 0.95);
+    border-radius: 20px;
+    overflow: hidden;
+    -webkit-box-shadow: 10px 10px 24px 2px rgba(0,0,0,0.75);
+    -moz-box-shadow: 10px 10px 24px 2px rgba(0,0,0,0.75);
+    box-shadow: 10px 10px 24px 2px rgba(0,0,0,0.75);
+    backdrop-filter: blur(10px);
+    margin-top: 2rem;
+  }
+
+  .header {
+    background: linear-gradient(135deg, $primary-color 0%, darken($primary-color, 10%) 100%);
+    color: $secondary-color;
+    padding: 3rem 2rem;
+    text-align: center;
+    position: relative;
+
+    h1 {
+      margin: 0 0 1rem 0;
+      font-family: $primary-font;
+      font-size: 3rem;
+      font-weight: normal;
+      text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+      animation: fadeInDown 1s ease-out;
+    }
+
+    p {
+      margin: 0;
+      opacity: 0.9;
+      font-size: 1.2rem;
+      font-weight: 300;
+      animation: fadeInUp 1s ease-out 0.3s both;
+    }
+
+    .statusBadge {
+      position: absolute;
+      top: 2rem;
+      right: 2rem;
+      animation: fadeInRight 1s ease-out 0.6s both;
+
+      .configuredBadge {
+        background: $extra-color;
+        color: white;
+        padding: 0.75rem 1.5rem;
+        border-radius: 25px;
+        font-size: 0.875rem;
+        font-weight: 600;
+        box-shadow: 0 4px 12px rgba(185, 149, 74, 0.3);
+      }
+    }
+  }
+
+  .successAlert, .errorAlert {
+    margin: 2rem;
+    border-radius: 12px !important;
+    font-weight: 600 !important;
+    text-align: center;
+    animation: slideInDown 0.5s ease-out;
+  }
+
+  .successAlert {
+    background: rgba(185, 149, 74, 0.2) !important;
+    border: 2px solid $extra-color !important;
+    color: $secondary-color !important;
+  }
+
+  .errorAlert {
+    background: rgba(219, 117, 24, 0.2) !important;
+    border: 2px solid $alert-color !important;
+    color: lighten($alert-color, 10%) !important;
+  }
+
+  .form {
+    padding: 3rem 2rem;
+    color: $secondary-color;
+
+    .section {
+      margin-bottom: 3rem;
+      animation: fadeInUp 0.8s ease-out;
+
+      h2 {
+        color: $secondary-color;
+        font-family: $primary-font;
+        font-size: 2rem;
+        margin-bottom: 2rem;
+        padding-bottom: 1rem;
+        border-bottom: 3px solid $extra-color;
+        text-shadow: 1px 1px 2px rgba(0,0,0,0.3);
+        position: relative;
+
+        &::after {
+          content: '';
+          position: absolute;
+          bottom: -3px;
+          left: 0;
+          width: 60px;
+          height: 3px;
+          background: linear-gradient(90deg, $extra-color, lighten($extra-color, 20%));
+          border-radius: 2px;
+        }
+      }
+    }
+
+    .inputGroup {
+      margin-bottom: 2rem;
+
+      .form-label {
+        display: block;
+        margin-bottom: 0.75rem;
+        color: $secondary-color;
+        font-weight: 600;
+        font-size: 1rem;
+        text-shadow: 1px 1px 2px rgba(0,0,0,0.3);
+      }
+
+      .input {
+        background: rgba(249, 249, 249, 0.1) !important;
+        border: 2px solid rgba(249, 249, 249, 0.2) !important;
+        border-radius: 12px !important;
+        color: $secondary-color !important;
+        padding: 1rem 1.25rem !important;
+        font-size: 1rem !important;
+        transition: all 0.3s ease !important;
+        backdrop-filter: blur(5px) !important;
+
+        &::placeholder {
+          color: rgba(249, 249, 249, 0.6) !important;
+        }
+
+        &:focus {
+          background: rgba(249, 249, 249, 0.15) !important;
+          border-color: $extra-color !important;
+          box-shadow: 0 0 0 0.2rem rgba(185, 149, 74, 0.25) !important;
+          color: $secondary-color !important;
+        }
+
+        &:disabled {
+          opacity: 0.6 !important;
+          cursor: not-allowed !important;
+        }
+
+        &.is-invalid {
+          border-color: $alert-color !important;
+          box-shadow: 0 0 0 0.2rem rgba(219, 117, 24, 0.25) !important;
+        }
+      }
+
+      .invalid-feedback {
+        color: lighten($alert-color, 10%) !important;
+        font-weight: 500;
+        font-size: 0.875rem;
+        margin-top: 0.5rem;
+      }
+
+      .errorMessage {
+        color: lighten($alert-color, 10%);
+        font-weight: 500;
+        font-size: 0.875rem;
+        margin-top: 0.5rem;
+        display: block;
+      }
+    }
+
+    .checkboxGroup {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+      gap: 1rem;
+      margin-top: 1rem;
+
+      .checkbox {
+        .form-check-input {
+          background-color: rgba(249, 249, 249, 0.1) !important;
+          border: 2px solid rgba(249, 249, 249, 0.2) !important;
+          margin-right: 0.75rem !important;
+          transform: scale(1.2) !important;
+
+          &:checked {
+            background-color: $extra-color !important;
+            border-color: $extra-color !important;
+          }
+
+          &:focus {
+            border-color: $extra-color !important;
+            box-shadow: 0 0 0 0.2rem rgba(185, 149, 74, 0.25) !important;
+          }
+        }
+
+        .form-check-label {
+          color: $secondary-color !important;
+          font-weight: 500 !important;
+          font-size: 0.95rem !important;
+          text-transform: capitalize !important;
+          cursor: pointer !important;
+          padding: 0.5rem 0 !important;
+        }
+      }
+    }
+
+    .buttonGroup {
+      margin-top: 3rem;
+      padding-top: 2rem;
+      border-top: 2px solid rgba(249, 249, 249, 0.1);
+      display: flex;
+      gap: 1rem;
+      justify-content: center;
+
+      .cancelButton {
+        background: rgba(249, 249, 249, 0.1) !important;
+        border: 2px solid rgba(249, 249, 249, 0.2) !important;
+        color: $secondary-color !important;
+        padding: 1rem 2rem !important;
+        border-radius: 12px !important;
+        font-size: 1.1rem !important;
+        font-weight: 600 !important;
+        transition: all 0.3s ease !important;
+        min-width: 150px !important;
+
+        &:hover:not(:disabled) {
+          background: rgba(249, 249, 249, 0.2) !important;
+          border-color: rgba(249, 249, 249, 0.4) !important;
+          transform: translateY(-2px) !important;
+        }
+
+        &:disabled {
+          opacity: 0.6 !important;
+          cursor: not-allowed !important;
+        }
+      }
+
+      .saveButton {
+        background: linear-gradient(135deg, $extra-color 0%, lighten($extra-color, 10%) 100%) !important;
+        border: none !important;
+        color: white !important;
+        padding: 1rem 2rem !important;
+        border-radius: 12px !important;
+        font-size: 1.1rem !important;
+        font-weight: 700 !important;
+        font-family: $primary-font !important;
+        transition: all 0.3s ease !important;
+        min-width: 250px !important;
+        text-transform: uppercase !important;
+        letter-spacing: 1px !important;
+        box-shadow: 0 8px 20px rgba(185, 149, 74, 0.3) !important;
+
+        &:hover:not(:disabled) {
+          transform: translateY(-2px) !important;
+          box-shadow: 0 12px 25px rgba(185, 149, 74, 0.4) !important;
+          background: linear-gradient(135deg, lighten($extra-color, 5%) 0%, lighten($extra-color, 15%) 100%) !important;
+        }
+
+        &:active:not(:disabled) {
+          transform: translateY(0) !important;
+        }
+
+        &:disabled {
+          opacity: 0.6 !important;
+          cursor: not-allowed !important;
+          transform: none !important;
+          box-shadow: 0 4px 10px rgba(185, 149, 74, 0.2) !important;
+        }
+      }
+    }
+  }
+}
+
+// Animações
+@keyframes fadeInDown {
+  from {
+    opacity: 0;
+    transform: translateY(-30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeInRight {
+  from {
+    opacity: 0;
+    transform: translateX(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes slideInDown {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+// Responsividade
+@media (max-width: 1024px) {
+  .configurationPage {
+    .container {
+      margin: 0 0.5rem;
+      margin-top: 1rem;
+    }
+
+    .form {
+      padding: 2rem 1.5rem;
+
+      .section h2 {
+        font-size: 1.6rem;
+      }
+
+      .buttonGroup {
+        flex-direction: column;
+
+        .cancelButton,
+        .saveButton {
+          min-width: 100% !important;
+        }
+      }
+    }
+  }
+}
+
+@media (max-width: 768px) {
+  .configurationPage {
+    padding: 1rem 0.5rem;
+
+    .header {
+      padding: 2rem 1rem;
+
+      h1 {
+        font-size: 2.2rem;
+      }
+
+      p {
+        font-size: 1rem;
+      }
+
+      .statusBadge {
+        position: static;
+        margin-top: 1.5rem;
+      }
+    }
+
+    .form {
+      padding: 1.5rem 1rem;
+
+      .section h2 {
+        font-size: 1.4rem;
+      }
+
+      .checkboxGroup {
+        grid-template-columns: 1fr;
+      }
+    }
+  }
+}
+
+@media (max-width: 480px) {
+  .configurationPage {
+    .header h1 {
+      font-size: 1.8rem;
+    }
+
+    .form {
+      padding: 1rem;
+
+      .section h2 {
+        font-size: 1.2rem;
+      }
+    }
+  }
+}
