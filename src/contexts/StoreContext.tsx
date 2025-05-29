@@ -1,105 +1,15 @@
-import { createContext, useContext, useMemo, useState, useCallback, ReactNode } from 'react';
-
-interface Employee {
-  id: number;
-  name: string;
-  email?: string;
-  phone?: string;
-  specialties: string[];
-  workSchedule: {
-    [key: string]: {
-      start: string;
-      end: string;
-      isWorking: boolean;
-    };
-  };
-  isActive: boolean;
-  avatar?: string;
-}
-
-interface Client {
-  id: number;
-  name: string;
-  email: string;
-  phone: string;
-  lastVisit?: Date;
-  totalVisits: number;
-  preferences?: string[];
-  isActive: boolean;
-}
-
-interface Service {
-  id: number;
-  name: string;
-  description: string;
-  duration: number; // em minutos
-  price: number;
-  category: string;
-  isActive: boolean;
-}
-
-interface Appointment {
-  id: number;
-  clientId: number;
-  employeeId: number;
-  serviceIds: number[];
-  date: Date;
-  startTime: string;
-  endTime: string;
-  status: 'agendado' | 'confirmado' | 'em_andamento' | 'concluido' | 'cancelado';
-  notes?: string;
-  totalPrice: number;
-}
-
-interface StoreContextType {
-  storeName: string;
-  
-  // Funcionários
-  employees: Employee[];
-  selectedEmployee: Employee | null;
-  activeEmployee: Employee | null;
-  setSelectedEmployee: (employee: Employee | null) => void;
-  addEmployee: (employee: Omit<Employee, 'id'>) => void;
-  updateEmployee: (id: number, updates: Partial<Employee>) => void;
-  removeEmployee: (id: number) => void;
-  getActiveEmployees: () => Employee[];
-  
-  // Clientes
-  clients: Client[];
-  selectedClient: Client | null;
-  setSelectedClient: (client: Client | null) => void;
-  addClient: (client: Omit<Client, 'id' | 'totalVisits'>) => void;
-  updateClient: (id: number, updates: Partial<Client>) => void;
-  removeClient: (id: number) => void;
-  searchClients: (query: string) => Client[];
-  
-  // Serviços
-  services: Service[];
-  selectedServices: Service[];
-  setSelectedServices: (services: Service[]) => void;
-  addService: (service: Omit<Service, 'id'>) => void;
-  updateService: (id: number, updates: Partial<Service>) => void;
-  removeService: (id: number) => void;
-  getActiveServices: () => Service[];
-  calculateTotalPrice: (serviceIds: number[]) => number;
-  
-  // Agendamentos
-  appointments: Appointment[];
-  addAppointment: (appointment: Omit<Appointment, 'id'>) => void;
-  updateAppointment: (id: number, updates: Partial<Appointment>) => void;
-  cancelAppointment: (id: number) => void;
-  getAppointmentsByDate: (date: Date) => Appointment[];
-  getAppointmentsByEmployee: (employeeId: number) => Appointment[];
-  getAppointmentsByClient: (clientId: number) => Appointment[];
-}
-
-const defaultEmployee: Employee = {
-  id: 0,
-  name: 'Todos os Funcionários',
-  specialties: [],
-  workSchedule: {},
-  isActive: true
-};
+// src/contexts/StoreContext.tsx
+import React, { createContext, useContext, useState, useEffect, ReactNode, useCallback } from 'react';
+import { BarbeariaService } from '@/services/barbeariaService';
+import { useAuth } from './UserContext';
+import { useConfig } from './ConfigContext';
+import type { 
+  Funcionario, 
+  Cliente, 
+  Servico, 
+  Agendamento, 
+  StoreContextType 
+} from '@/types';
 
 const StoreContext = createContext<StoreContextType | undefined>(undefined);
 
@@ -107,268 +17,327 @@ interface StoreProviderProps {
   children: ReactNode;
 }
 
-const StoreProvider = ({ children }: StoreProviderProps) => {
-  const storeName = 'Barber Shop';
+export const StoreProvider: React.FC<StoreProviderProps> = ({ children }) => {
+  const { user } = useAuth();
+  const { contribuinte, isConfigured } = useConfig();
 
-  // Estado dos Funcionários
-  const [employees] = useState<Employee[]>([
-    defaultEmployee,
-    {
-      id: 1,
-      name: 'João Silva',
-      email: 'joao@barbershop.com',
-      phone: '(11) 99999-1111',
-      specialties: ['Corte Masculino', 'Barba', 'Bigode'],
-      workSchedule: {
-        segunda: { start: '08:00', end: '18:00', isWorking: true },
-        terça: { start: '08:00', end: '18:00', isWorking: true },
-        quarta: { start: '08:00', end: '18:00', isWorking: true },
-        quinta: { start: '08:00', end: '18:00', isWorking: true },
-        sexta: { start: '08:00', end: '18:00', isWorking: true },
-        sábado: { start: '08:00', end: '16:00', isWorking: true },
-        domingo: { start: '00:00', end: '00:00', isWorking: false }
-      },
-      isActive: true
-    },
-    {
-      id: 2,
-      name: 'Pedro Santos',
-      email: 'pedro@barbershop.com',
-      phone: '(11) 99999-2222',
-      specialties: ['Corte Feminino', 'Coloração', 'Escova'],
-      workSchedule: {
-        segunda: { start: '09:00', end: '17:00', isWorking: true },
-        terça: { start: '09:00', end: '17:00', isWorking: true },
-        quarta: { start: '09:00', end: '17:00', isWorking: true },
-        quinta: { start: '09:00', end: '17:00', isWorking: true },
-        sexta: { start: '09:00', end: '17:00', isWorking: true },
-        sábado: { start: '09:00', end: '15:00', isWorking: true },
-        domingo: { start: '00:00', end: '00:00', isWorking: false }
-      },
-      isActive: true
-    },
-    {
-      id: 3,
-      name: 'Carlos Oliveira',
-      email: 'carlos@barbershop.com',
-      phone: '(11) 99999-3333',
-      specialties: ['Corte Masculino', 'Barba', 'Tratamentos'],
-      workSchedule: {
-        segunda: { start: '10:00', end: '19:00', isWorking: true },
-        terça: { start: '10:00', end: '19:00', isWorking: true },
-        quarta: { start: '00:00', end: '00:00', isWorking: false },
-        quinta: { start: '10:00', end: '19:00', isWorking: true },
-        sexta: { start: '10:00', end: '19:00', isWorking: true },
-        sábado: { start: '10:00', end: '16:00', isWorking: true },
-        domingo: { start: '10:00', end: '14:00', isWorking: true }
-      },
-      isActive: true
+  // Estados
+  const [funcionarios, setFuncionarios] = useState<Funcionario[]>([]);
+  const [clientes, setClientes] = useState<Cliente[]>([]);
+  const [servicos, setServicos] = useState<Servico[]>([]);
+  const [agendamentos, setAgendamentos] = useState<Agendamento[]>([]);
+  const [selectedFuncionario, setSelectedFuncionario] = useState<Funcionario | null>(null);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  // Carregar dados quando contribuinte estiver disponível
+  useEffect(() => {
+    if (contribuinte && user && isConfigured) {
+      refreshData();
     }
-  ]);
+  }, [contribuinte, user, isConfigured]);
 
-  const [selectedEmployee, setSelectedEmployee] = useState<Employee | null>(defaultEmployee);
-
-  // Estado dos Clientes
-  const [clients, setClients] = useState<Client[]>([]);
-  const [selectedClient, setSelectedClient] = useState<Client | null>(null);
-
-  // Estado dos Serviços
-  const [services] = useState<Service[]>([
-    {
-      id: 1,
-      name: 'Corte Masculino',
-      description: 'Corte de cabelo masculino tradicional',
-      duration: 30,
-      price: 25.00,
-      category: 'Corte',
-      isActive: true
-    },
-    {
-      id: 2,
-      name: 'Barba',
-      description: 'Aparar e modelar barba',
-      duration: 20,
-      price: 15.00,
-      category: 'Barba',
-      isActive: true
-    },
-    {
-      id: 3,
-      name: 'Corte + Barba',
-      description: 'Pacote completo corte e barba',
-      duration: 45,
-      price: 35.00,
-      category: 'Pacote',
-      isActive: true
-    },
-    {
-      id: 4,
-      name: 'Coloração',
-      description: 'Coloração completa do cabelo',
-      duration: 90,
-      price: 80.00,
-      category: 'Coloração',
-      isActive: true
+  // Definir funcionário padrão quando funcionários carregarem
+  useEffect(() => {
+    if (funcionarios.length > 0 && !selectedFuncionario) {
+      const funcionarioPadrao = funcionarios.find(f => f.nome.includes('Todos'));
+      setSelectedFuncionario(funcionarioPadrao || funcionarios[0]); // ✅ CORRIGIDO: era funcionarios sem [0]
     }
-  ]);
+  }, [funcionarios, selectedFuncionario]);
 
-  const [selectedServices, setSelectedServices] = useState<Service[]>([]);
+  // Atualizar todos os dados
+  const refreshData = useCallback(async (): Promise<void> => {
+    if (!contribuinte || !user) return;
 
-  // Estado dos Agendamentos
-  const [appointments, setAppointments] = useState<Appointment[]>([]);
+    setLoading(true);
+    setError(null);
 
-  // Funções dos Funcionários
-  const activeEmployee = useMemo(() => {
-    if (selectedEmployee?.id === 0) return null;
-    return selectedEmployee;
-  }, [selectedEmployee]);
+    try {
+      const [funcionariosData, clientesData, servicosData, agendamentosData] = await Promise.all([
+        BarbeariaService.buscarFuncionarios(contribuinte),
+        BarbeariaService.buscarClientes(contribuinte),
+        BarbeariaService.buscarServicos(contribuinte),
+        BarbeariaService.buscarAgendamentos(contribuinte)
+      ]);
 
-  const getActiveEmployees = useCallback(() => {
-    return employees.filter(emp => emp.isActive && emp.id !== 0);
-  }, [employees]);
+      setFuncionarios(funcionariosData);
+      setClientes(clientesData);
+      setServicos(servicosData);
+      setAgendamentos(agendamentosData);
+    } catch (err) {
+      const errorMessage = err instanceof Error ? err.message : 'Erro ao carregar dados';
+      setError(errorMessage);
+      console.error('Erro ao carregar dados:', err);
+    } finally {
+      setLoading(false);
+    }
+  }, [contribuinte, user]);
 
-  const addEmployee = useCallback((employee: Omit<Employee, 'id'>) => {
-    const newId = Math.max(...employees.map(e => e.id)) + 1;
-    const newEmployee = { ...employee, id: newId };
-    // setEmployees(prev => [...prev, newEmployee]);
-  }, [employees]);
-
-  const updateEmployee = useCallback((id: number, updates: Partial<Employee>) => {
-    // setEmployees(prev => prev.map(emp => emp.id === id ? { ...emp, ...updates } : emp));
+  // Limpar erro
+  const clearError = useCallback(() => {
+    setError(null);
   }, []);
 
-  const removeEmployee = useCallback((id: number) => {
-    // setEmployees(prev => prev.map(emp => emp.id === id ? { ...emp, isActive: false } : emp));
-  }, []);
+  // ===== FUNCIONÁRIOS =====
+  
+  const addFuncionario = useCallback(async (funcionario: Omit<Funcionario, keyof import('@/types').BaseEntity>): Promise<string> => {
+    if (!contribuinte) throw new Error('Contribuinte não definido');
 
-  // Funções dos Clientes
-  const addClient = useCallback((client: Omit<Client, 'id' | 'totalVisits'>) => {
-    const newId = Math.max(0, ...clients.map(c => c.id)) + 1;
-    const newClient = { ...client, id: newId, totalVisits: 0 };
-    setClients(prev => [...prev, newClient]);
-  }, [clients]);
+    try {
+      const id = await BarbeariaService.adicionarFuncionario(contribuinte, funcionario);
+      await refreshData();
+      return id;
+    } catch (err) {
+      const errorMessage = err instanceof Error ? err.message : 'Erro ao adicionar funcionário';
+      setError(errorMessage);
+      throw err;
+    }
+  }, [contribuinte, refreshData]);
 
-  const updateClient = useCallback((id: number, updates: Partial<Client>) => {
-    setClients(prev => prev.map(client => client.id === id ? { ...client, ...updates } : client));
-  }, []);
+  const updateFuncionario = useCallback(async (id: string, updates: Partial<Funcionario>): Promise<void> => {
+    if (!contribuinte) throw new Error('Contribuinte não definido');
 
-  const removeClient = useCallback((id: number) => {
-    setClients(prev => prev.map(client => client.id === id ? { ...client, isActive: false } : client));
-  }, []);
+    try {
+      // Implementar atualização no service
+      await refreshData();
+    } catch (err) {
+      const errorMessage = err instanceof Error ? err.message : 'Erro ao atualizar funcionário';
+      setError(errorMessage);
+      throw err;
+    }
+  }, [contribuinte, refreshData]);
 
-  const searchClients = useCallback((query: string) => {
-    return clients.filter(client => 
-      client.name.toLowerCase().includes(query.toLowerCase()) ||
-      client.email.toLowerCase().includes(query.toLowerCase()) ||
-      client.phone.includes(query)
+  const removeFuncionario = useCallback(async (id: string): Promise<void> => {
+    if (!contribuinte) throw new Error('Contribuinte não definido');
+
+    try {
+      // Implementar remoção no service
+      await refreshData();
+    } catch (err) {
+      const errorMessage = err instanceof Error ? err.message : 'Erro ao remover funcionário';
+      setError(errorMessage);
+      throw err;
+    }
+  }, [contribuinte, refreshData]);
+
+  const getFuncionariosAtivos = useCallback((): Funcionario[] => {
+    return funcionarios.filter(f => f.ativo);
+  }, [funcionarios]);
+
+  // ===== CLIENTES =====
+  
+  const addCliente = useCallback(async (cliente: Omit<Cliente, keyof import('@/types').BaseEntity | 'totalVisitas'>): Promise<string> => {
+    if (!contribuinte) throw new Error('Contribuinte não definido');
+
+    try {
+      const id = await BarbeariaService.adicionarCliente(contribuinte, cliente);
+      await refreshData();
+      return id;
+    } catch (err) {
+      const errorMessage = err instanceof Error ? err.message : 'Erro ao adicionar cliente';
+      setError(errorMessage);
+      throw err;
+    }
+  }, [contribuinte, refreshData]);
+
+  const updateCliente = useCallback(async (id: string, updates: Partial<Cliente>): Promise<void> => {
+    if (!contribuinte) throw new Error('Contribuinte não definido');
+
+    try {
+      // Implementar atualização no service
+      await refreshData();
+    } catch (err) {
+      const errorMessage = err instanceof Error ? err.message : 'Erro ao atualizar cliente';
+      setError(errorMessage);
+      throw err;
+    }
+  }, [contribuinte, refreshData]);
+
+  const removeCliente = useCallback(async (id: string): Promise<void> => {
+    if (!contribuinte) throw new Error('Contribuinte não definido');
+
+    try {
+      // Implementar remoção no service
+      await refreshData();
+    } catch (err) {
+      const errorMessage = err instanceof Error ? err.message : 'Erro ao remover cliente';
+      setError(errorMessage);
+      throw err;
+    }
+  }, [contribuinte, refreshData]);
+
+  const searchClientes = useCallback((query: string): Cliente[] => {
+    const searchTerm = query.toLowerCase();
+    return clientes.filter(cliente =>
+      cliente.nome.toLowerCase().includes(searchTerm) ||
+      cliente.email.toLowerCase().includes(searchTerm) ||
+      cliente.telefone.includes(searchTerm)
     );
-  }, [clients]);
+  }, [clientes]);
 
-  // Funções dos Serviços
-  const getActiveServices = useCallback(() => {
-    return services.filter(service => service.isActive);
-  }, [services]);
+  // ===== SERVIÇOS =====
+  
+  const addServico = useCallback(async (servico: Omit<Servico, keyof import('@/types').BaseEntity>): Promise<string> => {
+    if (!contribuinte) throw new Error('Contribuinte não definido');
 
-  const addService = useCallback((service: Omit<Service, 'id'>) => {
-    const newId = Math.max(...services.map(s => s.id)) + 1;
-    const newService = { ...service, id: newId };
-    // setServices(prev => [...prev, newService]);
-  }, [services]);
+    try {
+      // Implementar adição no service
+      await refreshData();
+      return 'temp-id';
+    } catch (err) {
+      const errorMessage = err instanceof Error ? err.message : 'Erro ao adicionar serviço';
+      setError(errorMessage);
+      throw err;
+    }
+  }, [contribuinte, refreshData]);
 
-  const updateService = useCallback((id: number, updates: Partial<Service>) => {
-    // setServices(prev => prev.map(service => service.id === id ? { ...service, ...updates } : service));
-  }, []);
+  const updateServico = useCallback(async (id: string, updates: Partial<Servico>): Promise<void> => {
+    if (!contribuinte) throw new Error('Contribuinte não definido');
 
-  const removeService = useCallback((id: number) => {
-    // setServices(prev => prev.map(service => service.id === id ? { ...service, isActive: false } : service));
-  }, []);
+    try {
+      // Implementar atualização no service
+      await refreshData();
+    } catch (err) {
+      const errorMessage = err instanceof Error ? err.message : 'Erro ao atualizar serviço';
+      setError(errorMessage);
+      throw err;
+    }
+  }, [contribuinte, refreshData]);
 
-  const calculateTotalPrice = useCallback((serviceIds: number[]) => {
-    return services
-      .filter(service => serviceIds.includes(service.id))
-      .reduce((total, service) => total + service.price, 0);
-  }, [services]);
+  const removeServico = useCallback(async (id: string): Promise<void> => {
+    if (!contribuinte) throw new Error('Contribuinte não definido');
 
-  // Funções dos Agendamentos
-  const addAppointment = useCallback((appointment: Omit<Appointment, 'id'>) => {
-    const newId = Math.max(0, ...appointments.map(a => a.id)) + 1;
-    const newAppointment = { ...appointment, id: newId };
-    setAppointments(prev => [...prev, newAppointment]);
-  }, [appointments]);
+    try {
+      // Implementar remoção no service
+      await refreshData();
+    } catch (err) {
+      const errorMessage = err instanceof Error ? err.message : 'Erro ao remover serviço';
+      setError(errorMessage);
+      throw err;
+    }
+  }, [contribuinte, refreshData]);
 
-  const updateAppointment = useCallback((id: number, updates: Partial<Appointment>) => {
-    setAppointments(prev => prev.map(apt => apt.id === id ? { ...apt, ...updates } : apt));
-  }, []);
+  const getServicosAtivos = useCallback((): Servico[] => {
+    return servicos.filter(s => s.ativo);
+  }, [servicos]);
 
-  const cancelAppointment = useCallback((id: number) => {
-    updateAppointment(id, { status: 'cancelado' });
-  }, [updateAppointment]);
+  const calculateTotalPrice = useCallback((servicoIds: string[]): number => {
+    return servicos
+      .filter(servico => servicoIds.includes(servico.id))
+      .reduce((total, servico) => total + servico.preco, 0);
+  }, [servicos]);
 
-  const getAppointmentsByDate = useCallback((date: Date) => {
-    return appointments.filter(apt => 
-      apt.date.toDateString() === date.toDateString()
-    );
-  }, [appointments]);
+  // ===== AGENDAMENTOS =====
+  
+  const createAgendamento = useCallback(async (agendamento: Omit<Agendamento, keyof import('@/types').BaseEntity>): Promise<string> => {
+    if (!contribuinte) throw new Error('Contribuinte não definido');
 
-  const getAppointmentsByEmployee = useCallback((employeeId: number) => {
-    return appointments.filter(apt => apt.employeeId === employeeId);
-  }, [appointments]);
+    try {
+      const id = await BarbeariaService.criarAgendamento(contribuinte, agendamento);
+      await refreshData();
+      return id;
+    } catch (err) {
+      const errorMessage = err instanceof Error ? err.message : 'Erro ao criar agendamento';
+      setError(errorMessage);
+      throw err;
+    }
+  }, [contribuinte, refreshData]);
 
-  const getAppointmentsByClient = useCallback((clientId: number) => {
-    return appointments.filter(apt => apt.clientId === clientId);
-  }, [appointments]);
+  const updateAgendamento = useCallback(async (id: string, updates: Partial<Agendamento>): Promise<void> => {
+    if (!contribuinte) throw new Error('Contribuinte não definido');
 
-  const contextValue: StoreContextType = {
-    storeName,
-    
-    // Funcionários
-    employees,
-    selectedEmployee,
-    activeEmployee,
-    setSelectedEmployee,
-    addEmployee,
-    updateEmployee,
-    removeEmployee,
-    getActiveEmployees,
-    
-    // Clientes
-    clients,
-    selectedClient,
-    setSelectedClient,
-    addClient,
-    updateClient,
-    removeClient,
-    searchClients,
-    
-    // Serviços
-    services,
-    selectedServices,
-    setSelectedServices,
-    addService,
-    updateService,
-    removeService,
-    getActiveServices,
+    try {
+      // Implementar atualização no service
+      await refreshData();
+    } catch (err) {
+      const errorMessage = err instanceof Error ? err.message : 'Erro ao atualizar agendamento';
+      setError(errorMessage);
+      throw err;
+    }
+  }, [contribuinte, refreshData]);
+
+  const cancelAgendamento = useCallback(async (id: string): Promise<void> => {
+    if (!contribuinte) throw new Error('Contribuinte não definido');
+
+    try {
+      // Implementar cancelamento no service
+      await refreshData();
+    } catch (err) {
+      const errorMessage = err instanceof Error ? err.message : 'Erro ao cancelar agendamento';
+      setError(errorMessage);
+      throw err;
+    }
+  }, [contribuinte, refreshData]);
+
+  const getAgendamentosByDate = useCallback((date: Date): Agendamento[] => {
+    return agendamentos.filter(agendamento => {
+      const agendamentoDate = new Date(agendamento.data);
+      return agendamentoDate.toDateString() === date.toDateString();
+    });
+  }, [agendamentos]);
+
+  // ✅ COMPLETANDO AS FUNÇÕES QUE ESTAVAM FALTANDO
+  const getAgendamentosByFuncionario = useCallback((funcionarioId: string): Agendamento[] => {
+    return agendamentos.filter(agendamento => agendamento.funcionarioId === funcionarioId);
+  }, [agendamentos]);
+
+  const getAgendamentosByCliente = useCallback((clienteId: string): Agendamento[] => {
+    return agendamentos.filter(agendamento => agendamento.clienteId === clienteId);
+  }, [agendamentos]);
+
+  // ✅ CRIANDO O VALOR DO CONTEXTO
+  const value: StoreContextType = {
+    // Estados
+    funcionarios,
+    clientes,
+    servicos,
+    agendamentos,
+    selectedFuncionario,
+    loading,
+    error,
+
+    // Funções para funcionários
+    setSelectedFuncionario,
+    addFuncionario,
+    updateFuncionario,
+    removeFuncionario,
+    getFuncionariosAtivos,
+
+    // Funções para clientes
+    addCliente,
+    updateCliente,
+    removeCliente,
+    searchClientes,
+
+    // Funções para serviços
+    addServico,
+    updateServico,
+    removeServico,
+    getServicosAtivos,
     calculateTotalPrice,
-    
-    // Agendamentos
-    appointments,
-    addAppointment,
-    updateAppointment,
-    cancelAppointment,
-    getAppointmentsByDate,
-    getAppointmentsByEmployee,
-    getAppointmentsByClient
+
+    // Funções para agendamentos
+    createAgendamento,
+    updateAgendamento,
+    cancelAgendamento,
+    getAgendamentosByDate,
+    getAgendamentosByFuncionario,
+    getAgendamentosByCliente,
+
+    // Funções utilitárias
+    refreshData,
+    clearError
   };
 
   return (
-    <StoreContext.Provider value={contextValue}>
+    <StoreContext.Provider value={value}>
       {children}
     </StoreContext.Provider>
   );
 };
 
 // Hook personalizado para usar o contexto
-const useStore = () => {
+export const useStore = (): StoreContextType => {
   const context = useContext(StoreContext);
   if (!context) {
     throw new Error('useStore deve ser usado dentro de um StoreProvider');
@@ -376,5 +345,4 @@ const useStore = () => {
   return context;
 };
 
-export { StoreContext, StoreProvider, useStore };
-export type { Employee, Client, Service, Appointment, StoreContextType };
+export { StoreContext };

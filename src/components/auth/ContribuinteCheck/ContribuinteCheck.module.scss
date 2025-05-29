@@ -1,0 +1,169 @@
+// src/components/auth/ContribuinteCheck/ContribuinteCheck.module.scss
+.contribuinteCheck {
+  min-height: 100vh;
+  background-image: url('../../../assets/images/barbershop.png');
+  background-size: cover;
+  background-position: center;
+  background-attachment: fixed;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 2rem 1rem;
+
+  .container {
+    background: rgba(0, 29, 34, 0.95);
+    border-radius: 20px;
+    padding: 3rem 2rem;
+    max-width: 600px;
+    width: 100%;
+    backdrop-filter: blur(10px);
+    -webkit-box-shadow: 10px 10px 24px 2px rgba(0,0,0,0.75);
+    -moz-box-shadow: 10px 10px 24px 2px rgba(0,0,0,0.75);
+    box-shadow: 10px 10px 24px 2px rgba(0,0,0,0.75);
+  }
+
+  .header {
+    text-align: center;
+    margin-bottom: 3rem;
+    color: $secondary-color;
+
+    h1 {
+      font-family: $primary-font;
+      font-size: 3rem;
+      margin-bottom: 1rem;
+      color: $extra-color;
+      text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+      animation: fadeInDown 1s ease-out;
+    }
+
+    p {
+      font-size: 1.2rem;
+      opacity: 0.9;
+      margin: 0;
+      animation: fadeInUp 1s ease-out 0.3s both;
+    }
+  }
+
+  .alert {
+    background: rgba(219, 117, 24, 0.2) !important;
+    border: 2px solid $alert-color !important;
+    color: lighten($alert-color, 10%) !important;
+    border-radius: 12px !important;
+    margin-bottom: 2rem;
+  }
+
+  .form {
+    .form-label {
+      color: $secondary-color;
+      font-weight: 600;
+      font-size: 1.1rem;
+      margin-bottom: 1rem;
+      text-shadow: 1px 1px 2px rgba(0,0,0,0.3);
+    }
+
+    .input {
+      background: rgba(249, 249, 249, 0.1) !important;
+      border: 2px solid rgba(249, 249, 249, 0.2) !important;
+      border-radius: 12px !important;
+      color: $secondary-color !important;
+      padding: 1.25rem 1.5rem !important;
+      font-size: 1.2rem !important;
+      text-align: center !important;
+      font-weight: 600 !important;
+      letter-spacing: 2px !important;
+      transition: all 0.3s ease !important;
+
+      &::placeholder {
+        color: rgba(249, 249, 249, 0.6) !important;
+        letter-spacing: normal !important;
+        font-weight: normal !important;
+      }
+
+      &:focus {
+        background: rgba(249, 249, 249, 0.15) !important;
+        border-color: $extra-color !important;
+        box-shadow: 0 0 0 0.2rem rgba(185, 149, 74, 0.25) !important;
+        color: $secondary-color !important;
+      }
+
+      &.is-invalid {
+        border-color: $alert-color !important;
+        box-shadow: 0 0 0 0.2rem rgba(219, 117, 24, 0.25) !important;
+      }
+    }
+
+    .invalid-feedback {
+      color: lighten($alert-color, 10%) !important;
+      font-weight: 500;
+      font-size: 0.9rem;
+      text-align: center;
+    }
+
+    .helpText {
+      color: rgba(249, 249, 249, 0.7) !important;
+      font-size: 0.9rem;
+      text-align: center;
+      margin-top: 0.75rem;
+    }
+
+    .submitButton {
+      background: linear-gradient(135deg, $extra-color 0%, lighten($extra-color, 10%) 100%) !important;
+      border: none !important;
+      border-radius: 12px !important;
+      padding: 1.25rem 2rem !important;
+      font-size: 1.2rem !important;
+      font-weight: 700 !important;
+      font-family: $primary-font !important;
+      text-transform: uppercase !important;
+      letter-spacing: 1px !important;
+      transition: all 0.3s ease !important;
+      box-shadow: 0 8px 20px rgba(185, 149, 74, 0.3) !important;
+
+      &:hover:not(:disabled) {
+        transform: translateY(-2px) !important;
+        box-shadow: 0 12px 25px rgba(185, 149, 74, 0.4) !important;
+      }
+
+      &:disabled {
+        opacity: 0.7 !important;
+        transform: none !important;
+      }
+    }
+  }
+}
+
+@keyframes fadeInDown {
+  from {
+    opacity: 0;
+    transform: translateY(-30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (max-width: 768px) {
+  .contribuinteCheck {
+    padding: 1rem;
+
+    .container {
+      padding: 2rem 1.5rem;
+    }
+
+    .header h1 {
+      font-size: 2.5rem;
+    }
+  }
+}

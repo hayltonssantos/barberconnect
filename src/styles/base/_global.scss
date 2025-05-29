@@ -1,0 +1,171 @@
+// src/styles/base/_global.scss
+// Global styles for the application
+
+// Scrollbar customization
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: rgba(249, 249, 249, 0.1);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(185, 149, 74, 0.5);
+  border-radius: 4px;
+
+  &:hover {
+    background: rgba(185, 149, 74, 0.7);
+  }
+}
+
+// Selection styles
+::selection {
+  background: rgba(185, 149, 74, 0.3);
+  color: $secondary-color;
+}
+
+::-moz-selection {
+  background: rgba(185, 149, 74, 0.3);
+  color: $secondary-color;
+}
+
+// Focus styles
+*:focus {
+  outline: 2px solid $extra-color;
+  outline-offset: 2px;
+}
+
+// Bootstrap overrides
+.btn-primary {
+  background: linear-gradient(135deg, $extra-color 0%, lighten($extra-color, 10%) 100%) !important;
+  border: none !important;
+  
+  &:hover, &:focus, &:active {
+    background: linear-gradient(135deg, lighten($extra-color, 5%) 0%, lighten($extra-color, 15%) 100%) !important;
+    border: none !important;
+    box-shadow: 0 0 0 0.2rem rgba(185, 149, 74, 0.25) !important;
+  }
+}
+
+.btn-outline-primary {
+  border-color: $extra-color !important;
+  color: $extra-color !important;
+  
+  &:hover, &:focus, &:active {
+    background: $extra-color !important;
+    border-color: $extra-color !important;
+    color: white !important;
+  }
+}
+
+// Card overrides
+.card {
+  background: rgba(249, 249, 249, 0.05) !important;
+  border: 1px solid rgba(249, 249, 249, 0.1) !important;
+  color: $secondary-color !important;
+}
+
+// Badge overrides
+.badge {
+  &.bg-primary {
+    background: $extra-color !important;
+  }
+  
+  &.bg-success {
+    background: #48bb78 !important;
+  }
+  
+  &.bg-warning {
+    background: $alert-color !important;
+  }
+  
+  &.bg-danger {
+    background: #e53e3e !important;
+  }
+}
+
+// Alert overrides
+.alert {
+  border-radius: 12px !important;
+  border: none !important;
+  
+  &.alert-success {
+    background: rgba(72, 187, 120, 0.2) !important;
+    color: #48bb78 !important;
+    border: 2px solid #48bb78 !important;
+  }
+  
+  &.alert-danger {
+    background: rgba(219, 117, 24, 0.2) !important;
+    color: lighten($alert-color, 10%) !important;
+    border: 2px solid $alert-color !important;
+  }
+  
+  &.alert-warning {
+    background: rgba(237, 137, 54, 0.2) !important;
+    color: #ed8936 !important;
+    border: 2px solid #ed8936 !important;
+  }
+  
+  &.alert-info {
+    background: rgba(185, 149, 74, 0.2) !important;
+    color: $extra-color !important;
+    border: 2px solid $extra-color !important;
+  }
+}
+
+// Utility classes
+.text-primary {
+  color: $extra-color !important;
+}
+
+.bg-primary {
+  background: $extra-color !important;
+}
+
+.border-primary {
+  border-color: $extra-color !important;
+}
+
+// Animation utilities
+.fade-in {
+  animation: fadeIn 0.5s ease-out;
+}
+
+.slide-in-up {
+  animation: slideInUp 0.5s ease-out;
+}
+
+.slide-in-down {
+  animation: slideInDown 0.5s ease-out;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes slideInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideInDown {
+  from {
+    opacity: 0;
+    transform: translateY(-30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

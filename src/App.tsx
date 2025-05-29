@@ -1,102 +1,141 @@
-import React, { useState, useEffect, CSSProperties } from 'react';
-import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom';
-import RingLoader from 'react-spinners/RingLoader';
-import { UserProvider } from './contexts/user';
-import { ConfigProvider } from './contexts/ConfigContext';
-import { StoreProvider } from './contexts/StoreContext';
-import { DateProvider } from './contexts/DateContext';
-import Login from './Pages/login/Login';
-import Schedule from './Pages/schedule/Schedule';
-import StorePage from './Pages/store/StorePage';
-import ConfigurationPage from './Pages/configuration/ConfigurationPage';
-import CreateSchedule from './Pages/create-schedule/CreateSchedule';
-import ProtectedRoute from './components/protectedroute';
-import ProtectedLayout from './components/ProtectedLayout';
-import './style.scss';
-import '../services/firebase';
+// src/App.tsx
+import React from 'react';
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import { UserProvider } from '@/contexts/UserContext';
+import { ConfigProvider } from '@/contexts/ConfigContext';
+import { StoreProvider } from '@/contexts/StoreContext';
+import { DateProvider } from '@/contexts/DateContext';
+import ProtectedRoute from '@/components/auth/ProtectedRoute/ProtectedRoute';
+import ContribuinteCheck from '@/components/auth/ContribuinteCheck/ContribuinteCheck';
+import Login from '@/pages/Login/Login';
+import ConfigurationPage from '@/pages/Configuration/ConfigurationPage';
+import StorePage from '@/pages/Store/StorePage';
+import Loading from '@/components/ui/Loading/Loading';
+import { ErrorBoundary } from 'react-error-boundary';
+import './App.scss';
 
-function App() {
-  const [isLoading, setIsLoading] = useState(true);
+// Componente de erro
+const ErrorFallback: React.FC<{ error: Error; resetErrorBoundary: () => void }> = ({ 
+  error, 
+  resetErrorBoundary 
+}) => (
+  <div className="error-fallback">
+    <div className="error-content">
+      <h1>Oops! Algo deu errado</h1>
+      <p>Ocorreu um erro inesperado na aplicação:</p>
+      <pre>{error.message}</pre>
+      <button onClick={resetErrorBoundary} className="retry-button">
+        Tentar novamente
+      </button>
+    </div>
+  </div>
+);
 
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      setIsLoading(false);
-    }, 3000);
-
-    return () => clearTimeout(timer);
-  }, []);
-
-  const override: CSSProperties = {
-    display: "flex",
-    justifyContent: "center",
-    alignSelf: "center",
-    margin: "auto",
-    borderColor: "red",
-  };
-
-  if (isLoading) {
-    return (
-      <div>
-        <div className="titleContainer">
-          <h1 className="title">Barber Connect</h1>
-        </div>
-        <div className="loader">
-          <RingLoader 
-            color="#8c3f0d" 
-            loading={isLoading}
-            cssOverride={override} 
-            size={50} 
-          />
-        </div>
-      </div>
-    );
-  }
-
+const App: React.FC = () => {
   return (
-    <DateProvider>
-      <StoreProvider>
-        <ConfigProvider>
-          <UserProvider>
-            <BrowserRouter>
-              <Routes>
-                {/* Rotas públicas */}
-                <Route path="/login" element={<Login />} />
-                <Route path="/" element={<Navigate to="/login" replace />} />
-                
-                {/* Abordagem 1: Usando ProtectedRoute como wrapper */}
-                <Route 
-                  path="/configuration" 
-                  element={
-                    <ProtectedRoute>
-                      <ConfigurationPage />
-                    </ProtectedRoute>
-                  } 
-                />
-                
-                {/* Abordagem 2: Usando ProtectedLayout com Outlet */}
-                <Route element={<ProtectedLayout requiresConfiguration={true} />}>
-                  <Route path="/store" element={<StorePage />} />
-                  <Route path="/schedule" element={<Schedule />} />
-                  <Route path="/create-schedule" element={<CreateSchedule />} />
-                </Route>
+    <ErrorBoundary
+      FallbackComponent={ErrorFallback}
+      onError={(error, errorInfo) => {
+        console.error('Erro capturado pelo ErrorBoundary:', error, errorInfo);
+      }}
+    >
+      <DateProvider>
+        <UserProvider>
+          <ConfigProvider>
+            <StoreProvider>
+              <BrowserRouter>
+                <div className="app">
+                  <Routes>
+                    {/* Rota inicial - verificação de contribuinte */}
+                    <Route path="/" element={<ContribuinteCheck />} />
+                    
+                    {/* Rota de login */}
+                    <Route path="/login" element={<Login />} />
+                    
+                    {/* Rota de configuração - protegida por autenticação */}
+                    <Route 
+                      path="/configuration" 
+                      element={
+                        <ProtectedRoute>
+                          <ConfigurationPage />
+                        </ProtectedRoute>
+                      } 
+                    />
+                    
+                    {/* Rotas protegidas que precisam de configuração */}
+                    <Route 
+                      path="/store" 
+                      element={
+                        <ProtectedRoute requiresConfiguration={true}>
+                          <StorePage />
+                        </ProtectedRoute>
+                      } 
+                    />
+                    
+                    {/* Rota para criar agendamento */}
+                    <Route 
+                      path="/create-schedule" 
+                      element={
+                        <ProtectedRoute requiresConfiguration={true}>
+                          <div style={{ padding: '2rem', textAlign: 'center' }}>
+                            <h2>Página de Criar Agendamento</h2>
+                            <p>Em desenvolvimento...</p>
+                          </div>
+                        </ProtectedRoute>
+                      } 
+                    />
+                    
+                    {/* Rota para agendamentos */}
+                    <Route 
+                      path="/schedule" 
+                      element={
+                        <ProtectedRoute requiresConfiguration={true}>
+                          <div style={{ padding: '2rem', textAlign: 'center' }}>
+                            <h2>Página de Agendamentos</h2>
+                            <p>Em desenvolvimento...</p>
+                          </div>
+                        </ProtectedRoute>
+                      } 
+                    />
+                    
+                    {/* Rota para relatórios */}
+                    <Route 
+                      path="/reports" 
+                      element={
+                        <ProtectedRoute requiresConfiguration={true}>
+                          <div style={{ padding: '2rem', textAlign: 'center' }}>
+                            <h2>Página de Relatórios</h2>
+                            <p>Em desenvolvimento...</p>
+                          </div>
+                        </ProtectedRoute>
+                      } 
+                    />
 
-                {/* Rota para páginas não encontradas */}
-                <Route 
-                  path="*" 
-                  element={
-                    <div style={{ textAlign: 'center', padding: '2rem' }}>
-                      <h2>Página não encontrada</h2>
-                      <p>A página que você está procurando não existe.</p>
-                    </div>
-                  } 
-                />
-              </Routes>
-            </BrowserRouter>
-          </UserProvider>
-        </ConfigProvider>
-      </StoreProvider>
-    </DateProvider>
+                    {/* Rota 404 */}
+                    <Route 
+                      path="*" 
+                      element={
+                        <div className="not-found">
+                          <div className="not-found-content">
+                            <h1>404</h1>
+                            <h2>Página não encontrada</h2>
+                            <p>A página que você está procurando não existe.</p>
+                            <button onClick={() => window.location.href = '/'}>
+                              Voltar ao início
+                            </button>
+                          </div>
+                        </div>
+                      } 
+                    />
+                  </Routes>
+                </div>
+              </BrowserRouter>
+            </StoreProvider>
+          </ConfigProvider>
+        </UserProvider>
+      </DateProvider>
+    </ErrorBoundary>
   );
-}
+};
 
 export default App;
